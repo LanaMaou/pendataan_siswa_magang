@@ -1,0 +1,243 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3><%= total_pembimbing %></h3>
+          <p>Pembimbing</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <a href="/pembimbing" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3><%= total_ruangan %></h3>
+          <p>Ruangan</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-laptop-house"></i>
+        </div>
+        <a href="/lab" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-primary">
+        <div class="inner">
+          <h3><%= total_sekolah %></h3>
+          <p>Sekolah</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-school"></i>
+        </div>
+        <a href="/sekolah" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-secondary">
+        <div class="inner">
+          <h3><%= total_siswa %></h3>
+          <p>Siswa</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <a href="/siswa" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Siswa</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nis</th>
+                <th>Nama</th>
+                <th>No Hp</th>
+                <th>Asal Sekolah</th>
+                <th>Status Laporan</th>
+                <th>Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_siswa.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nis %></td>
+                <td><%= data.nama_siswa %></td>
+                <td><%= data.nohp_siswa %></td>
+                <td><%= data.nama_sekolah %></td>
+                <td><%= data.status_laporan %></td>
+                <td>
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_detail<%= no %>"
+                  >
+                    Detail
+                  </button>
+                </td>
+              </tr>
+              <!-- Modal Detail -->
+              <div
+                class="modal fade"
+                id="modal_detail<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Detail Data Siswa
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-2 row">
+                        <div class="form-kiri col-6">
+                          <div class="form-group">
+                            <label for="id_login">Akun Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="id_login"
+                              name="id_login"
+                              readonly
+                              value="<%= data.nama %>"
+                            />
+                            <label for="nis">NIS</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nis"
+                              name="nis"
+                              readonly
+                              value="<%= data.nis %>"
+                            />
+                            <label for="nama_siswa">Nama Lengkap</label>
+                            <input
+                              type="text"
+                              class="form-control nama_siswa_edit"
+                              id="nama_siswa_edit"
+                              name="nama_siswa"
+                              readonly
+                              value="<%= data.nama_siswa%>"
+                            />
+                            <label for="nohp_siswa">No Hp Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control nohp_siswa_edit"
+                              id="nohp_siswa_edit"
+                              name="nohp_siswa"
+                              readonly
+                              value="<%= data.nohp_siswa %>"
+                            />
+                            <label for="alamat_siswa">Alamat Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="alamat_siswa"
+                              name="alamat_siswa"
+                              readonly
+                              value="<%= data.alamat_siswa %>"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-kanan col-6">
+                          <div class="form-group">
+                            <label for="jenkel">Jenis Kelamin</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="jenkel"
+                              name="jenkel"
+                              readonly
+                              value="<%= data.jenkel %>"
+                            />
+                            <label for="id_sekolah">Asal Sekolah</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="id_sekolah"
+                              name="id_sekolah"
+                              readonly
+                              value="<%= data.nama_sekolah %>"
+                            />
+                            <label for="tempat_lahir">Tempat Lahir</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="tempat_lahir"
+                              name="tempat_lahir"
+                              readonly
+                              value="<%= data.tempat_lahir %>"
+                            />
+                            <label for="tanggal_lahir">Tanggal Lahir</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="tanggal_lahir"
+                              name="tanggal_lahir"
+                              readonly
+                              value="<%= data.tanggal_lahir.toISOString().slice(0, 10) %>"
+                            />
+                            <label for="status_laporan">Status Laporan</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="status_laporan"
+                              name="status_laporan"
+                              readonly
+                              value="<%= data.status_laporan %>"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+</div>

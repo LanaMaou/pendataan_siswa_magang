@@ -1,0 +1,249 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Sekolah</h3>
+          <button
+            class="btn btn-primary float-right"
+            type="button"
+            data-toggle="modal"
+            data-target="#modal_tambah"
+          >
+            Tambah Data
+          </button>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Sekolah</th>
+                <th>No Hp Sekolah</th>
+                <th>Email Sekolah</th>
+                <th>Alamat Sekolah</th>
+                <th width="125px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_sekolah.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nama_sekolah %></td>
+                <td><%= data.nohp_sekolah %></td>
+                <td><%= data.email_sekolah %></td>
+                <td><%= data.alamat_sekolah %></td>
+                <td>
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_ubah<%= no %>"
+                  >
+                    Ubah
+                  </button>
+                  <form
+                    action="/sekolah?_method=DELETE"
+                    method="post"
+                    class="d-inline hapus_form"
+                  >
+                    <input
+                      type="hidden"
+                      name="id_sekolah"
+                      value="<%= data.id_sekolah %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="nama"
+                      value="<%= data.nama_sekolah %>"
+                    />
+                    <button
+                      class="btn btn-danger tbl_hapus"
+                      type="submit"
+                      id="button_hapus"
+                    >
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade"
+                id="modal_ubah<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Ubah Data Sekolah
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form method="post" action="/sekolah?_method=PUT">
+                      <input
+                        type="hidden"
+                        value="<%= data.id_sekolah %>"
+                        name="id_sekolah"
+                      />
+                      <input
+                        type="hidden"
+                        value="<%= data.nama_sekolah %>"
+                        name="oldNama"
+                      />
+                      <input
+                        type="hidden"
+                        value="<%= data.email_sekolah %>"
+                        name="oldEmail"
+                      />
+                      <div class="modal-body">
+                        <div class="form-group">
+                          <label for="nama_sekolah">Nama Sekolah</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="nama_sekolah"
+                            placeholder="Masukan Nama Sekolah"
+                            name="nama_sekolah"
+                            required
+                            value="<%= data.nama_sekolah %>"
+                          />
+                          <label for="nohp_sekolah">No Hp Sekolah</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="nohp_sekolah"
+                            placeholder="Masukan No Hp Sekolah"
+                            name="nohp_sekolah"
+                            required
+                            value="<%= data.nohp_sekolah %>"
+                          />
+                          <label for="email_sekolah">Email Sekolah</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email_sekolah"
+                            placeholder="Masukan Email Sekolah"
+                            name="email_sekolah"
+                            required
+                            value="<%= data.email_sekolah %>"
+                          />
+                          <label for="alamat_sekolah">Alamat Sekolah</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="alamat_sekolah"
+                            placeholder="Masukan Alamat Sekolah"
+                            name="alamat_sekolah"
+                            required
+                            value="<%= data.alamat_sekolah %>"
+                          />
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Ubah
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+
+        <!-- Modal Tambah -->
+        <div
+          class="modal fade"
+          id="modal_tambah"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Tambah Data Sekolah
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/sekolah" method="post">
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="nama_sekolah">Nama Sekolah</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nama_sekolah"
+                      placeholder="Masukan Nama sekolah"
+                      name="nama_sekolah"
+                      required
+                    />
+                    <label for="nohp_sekolah">No Hp Sekolah</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nohp_sekolah"
+                      placeholder="Masukan No Hp Sekolah"
+                      name="nohp_sekolah"
+                      required
+                    />
+                    <label for="email_sekolah">Email Sekolah</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email_sekolah"
+                      placeholder="Masukan Lokasi sekolah"
+                      name="email_sekolah"
+                      required
+                    />
+                    <label for="alamat_sekolah">Alamat Sekolah</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="alamat_sekolah"
+                      placeholder="Masukan Alamat Sekolah"
+                      name="alamat_sekolah"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="reset" class="btn btn-secondary">
+                    Bersihkan
+                  </button>
+                  <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

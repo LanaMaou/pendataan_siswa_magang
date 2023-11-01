@@ -1,0 +1,551 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Siswa</h3>
+          <button
+            class="btn btn-primary float-right"
+            type="button"
+            data-toggle="modal"
+            data-target="#modal_tambah"
+          >
+            Tambah Data
+          </button>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nis</th>
+                <th>Nama</th>
+                <th>No Hp</th>
+                <th>Asal Sekolah</th>
+                <th>Status Laporan</th>
+                <th width="200px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_siswa.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nis %></td>
+                <td><%= data.nama_siswa %></td>
+                <td><%= data.nohp_siswa %></td>
+                <td><%= data.nama_sekolah %></td>
+                <td><%= data.status_laporan %></td>
+                <td>
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_detail<%= no %>"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_ubah<%= no %>"
+                  >
+                    Ubah
+                  </button>
+                  <form
+                    action="/siswa?_method=DELETE"
+                    method="post"
+                    class="d-inline hapus_form"
+                  >
+                    <input
+                      type="hidden"
+                      name="id_siswa"
+                      value="<%= data.id_siswa %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="nama"
+                      value="<%= data.nama_siswa %>"
+                    />
+                    <button
+                      class="btn btn-danger tbl_hapus"
+                      type="submit"
+                      id="button_hapus"
+                    >
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade modal-edit"
+                id="modal_ubah<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Ubah Data Siswa
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form action="/siswa?_method=PUT" method="post">
+                      <div class="modal-body">
+                        <div class="form-2 row">
+                          <div class="form-kiri col-6">
+                            <div class="form-group">
+                              <input
+                                type="hidden"
+                                value="<%= data.id_siswa %>"
+                                name="id_siswa"
+                              />
+                              <input
+                                type="hidden"
+                                value="<%= data.nis %>"
+                                name="oldNIS"
+                              />
+                              <label for="jenkel">Akun Siswa</label>
+                              <select
+                                name="id_login"
+                                id="select_akun_edit"
+                                class="form-control select_akun_edit"
+                                onchange="tampilkanDataSiswaEdit()"
+                                required
+                              >
+                                <option
+                                  value="<%= data.id_login %>"
+                                  data-nama="<%= data.nama %>"
+                                  data-nohp="<%= data.no_hp %>"
+                                >
+                                  <%= data.nama %>
+                                </option>
+                                <% data_akun.forEach(data => { %>
+                                <option
+                                  value="<%= data.id_login %>"
+                                  data-nama="<%= data.nama %>"
+                                  data-nohp="<%= data.no_hp %>"
+                                >
+                                  <%= data.nama %>
+                                </option>
+                                <% }) %>
+                              </select>
+                              <label for="nis">NIS</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nis"
+                                placeholder="Masukan Nis"
+                                name="nis"
+                                required
+                                value="<%= data.nis %>"
+                              />
+                              <label for="nama_siswa">Nama Lengkap</label>
+                              <input
+                                type="text"
+                                class="form-control nama_siswa_edit"
+                                id="nama_siswa_edit"
+                                placeholder="Masukan Nama Siswa"
+                                name="nama_siswa"
+                                required
+                                value="<%= data.nama_siswa%>"
+                              />
+                              <label for="nohp_siswa">No Hp Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control nohp_siswa_edit"
+                                id="nohp_siswa_edit"
+                                placeholder="Masukan No Hp Siswa"
+                                name="nohp_siswa"
+                                required
+                                value="<%= data.nohp_siswa %>"
+                              />
+                              <label for="alamat_siswa">Alamat Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="alamat_siswa"
+                                placeholder="Masukan Alamat Siswa"
+                                name="alamat_siswa"
+                                required
+                                value="<%= data.alamat_siswa %>"
+                              />
+                            </div>
+                          </div>
+                          <div class="form-kanan col-6">
+                            <div class="form-group">
+                              <label for="jenkel">Jenis Kelamin</label>
+                              <select
+                                name="jenkel"
+                                id="jenkel"
+                                class="form-control"
+                              >
+                                <option value="<%= data.jenkel %>">
+                                  <%= data.jenkel %>
+                                </option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                              </select>
+                              <label for="id_sekolah">Asal Sekolah</label>
+                              <select
+                                name="id_sekolah"
+                                id="id_sekolah"
+                                class="form-control"
+                              >
+                                <option value="<%= data.id_sekolah %>">
+                                  <%= data.nama_sekolah %>
+                                </option>
+                                <% data_sekolah.forEach(data => { %>
+                                <option value="<%= data.id_sekolah %>">
+                                  <%= data.nama_sekolah %>
+                                </option>
+                                <% }) %>
+                              </select>
+                              <label for="tempat_lahir">Tempat Lahir</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="tempat_lahir"
+                                placeholder="Masukan Tempat Lahir"
+                                name="tempat_lahir"
+                                required
+                                value="<%= data.tempat_lahir %>"
+                              />
+                              <label for="tanggal_lahir">Tanggal Lahir</label>
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="tanggal_lahir"
+                                placeholder="Masukan Tanggal Lahir"
+                                name="tanggal_lahir"
+                                required
+                                value="<%= data.tanggal_lahir.toISOString().slice(0, 10) %>"
+                              />
+                              <label for="status_laporan">Status Laporan</label>
+                              <select
+                                name="status_laporan"
+                                id="status_laporan"
+                                class="form-control"
+                              >
+                                <option value="<%= data.status_laporan %>">
+                                  <%= data.status_laporan %>
+                                </option>
+                                <option value="Belum Laporan">
+                                  Belum Laporan
+                                </option>
+                                <option value="Sudah Laporan">
+                                  Sudah Laporan
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Ubah
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Modal Detail -->
+              <div
+                class="modal fade"
+                id="modal_detail<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Detail Data Siswa
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-2 row">
+                        <div class="form-kiri col-6">
+                          <div class="form-group">
+                            <label for="id_login">Akun Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="id_login"
+                              name="id_login"
+                              readonly
+                              value="<%= data.nama %>"
+                            />
+                            <label for="nis">NIS</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nis"
+                              name="nis"
+                              readonly
+                              value="<%= data.nis %>"
+                            />
+                            <label for="nama_siswa">Nama Lengkap</label>
+                            <input
+                              type="text"
+                              class="form-control nama_siswa_edit"
+                              id="nama_siswa_edit"
+                              name="nama_siswa"
+                              readonly
+                              value="<%= data.nama_siswa%>"
+                            />
+                            <label for="nohp_siswa">No Hp Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control nohp_siswa_edit"
+                              id="nohp_siswa_edit"
+                              name="nohp_siswa"
+                              readonly
+                              value="<%= data.nohp_siswa %>"
+                            />
+                            <label for="alamat_siswa">Alamat Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="alamat_siswa"
+                              name="alamat_siswa"
+                              readonly
+                              value="<%= data.alamat_siswa %>"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-kanan col-6">
+                          <div class="form-group">
+                            <label for="jenkel">Jenis Kelamin</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="jenkel"
+                              name="jenkel"
+                              readonly
+                              value="<%= data.jenkel %>"
+                            />
+                            <label for="id_sekolah">Asal Sekolah</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="id_sekolah"
+                              name="id_sekolah"
+                              readonly
+                              value="<%= data.nama_sekolah %>"
+                            />
+                            <label for="tempat_lahir">Tempat Lahir</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="tempat_lahir"
+                              name="tempat_lahir"
+                              readonly
+                              value="<%= data.tempat_lahir %>"
+                            />
+                            <label for="tanggal_lahir">Tanggal Lahir</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="tanggal_lahir"
+                              name="tanggal_lahir"
+                              readonly
+                              value="<%= data.tanggal_lahir.toISOString().slice(0, 10) %>"
+                            />
+                            <label for="status_laporan">Status Laporan</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="status_laporan"
+                              name="status_laporan"
+                              readonly
+                              value="<%= data.status_laporan %>"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+
+        <!-- Modal Tambah -->
+        <div
+          class="modal fade"
+          id="modal_tambah"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Tambah Data Siswa
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/siswa" method="post">
+                <div class="modal-body">
+                  <div class="form-2 row">
+                    <div class="form-kiri col-6">
+                      <div class="form-group">
+                        <label for="jenkel">Akun Siswa</label>
+                        <select
+                          name="id_login"
+                          id="select_akun_tambah"
+                          class="form-control"
+                          onchange="tampilkanDataSiswa()"
+                          required
+                        >
+                          <option value="">Pilih Akun Siswa</option>
+                          <% data_akun.forEach(data => { %>
+                          <option
+                            value="<%= data.id_login %>"
+                            data-nama="<%= data.nama %>"
+                            data-nohp="<%= data.no_hp %>"
+                          >
+                            <%= data.nama %>
+                          </option>
+                          <% }) %>
+                        </select>
+                        <label for="nis">NIS</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nis"
+                          placeholder="Masukan Nis"
+                          name="nis"
+                          required
+                        />
+                        <label for="nama_siswa">Nama Lengkap</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nama_siswa_tambah"
+                          placeholder="Masukan Nama Siswa"
+                          name="nama_siswa"
+                          required
+                        />
+                        <label for="nohp_siswa">No Hp Siswa</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nohp_siswa_tambah"
+                          placeholder="Masukan No Hp Siswa"
+                          name="nohp_siswa"
+                          required
+                        />
+                        <label for="alamat_siswa">Alamat Siswa</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="alamat_siswa"
+                          placeholder="Masukan Alamat Siswa"
+                          name="alamat_siswa"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="form-kanan col-6">
+                      <div class="form-group">
+                        <label for="jenkel">Jenis Kelamin</label>
+                        <select name="jenkel" id="jenkel" class="form-control">
+                          <option value="">Pilih Jenis Kelamin</option>
+                          <option value="Laki-laki">Laki-laki</option>
+                          <option value="Perempuan">Perempuan</option>
+                        </select>
+                        <label for="id_sekolah">Asal Sekolah</label>
+                        <select
+                          name="id_sekolah"
+                          id="id_sekolah"
+                          class="form-control"
+                          required
+                        >
+                          <option value="">Pilih Asal Sekolah</option>
+                          <% data_sekolah.forEach(data => { %>
+                          <option value="<%= data.id_sekolah %>">
+                            <%= data.nama_sekolah %>
+                          </option>
+                          <% }) %>
+                        </select>
+                        <label for="tempat_lahir">Tempat Lahir</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="tempat_lahir"
+                          placeholder="Masukan Tempat Lahir"
+                          name="tempat_lahir"
+                          required
+                        />
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="tanggal_lahir"
+                          placeholder="Masukan Tanggal Lahir"
+                          name="tanggal_lahir"
+                          required
+                        />
+                        <label for="status_laporan">Status Laporan</label>
+                        <input
+                          type="text"
+                          value="Belum Laporan"
+                          class="form-control"
+                          name="status_laporan"
+                          readonly
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="reset" class="btn btn-secondary">
+                    Bersihkan
+                  </button>
+                  <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,340 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3><%= total_pembimbing %></h3>
+          <p>Pembimbing</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <a href="/pembimbing" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3><%= total_ruangan %></h3>
+          <p>Ruangan</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-laptop-house"></i>
+        </div>
+        <a href="/lab" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-primary">
+        <div class="inner">
+          <h3><%= total_sekolah %></h3>
+          <p>Sekolah</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-school"></i>
+        </div>
+        <a href="/sekolah" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small card -->
+      <div class="small-box bg-secondary">
+        <div class="inner">
+          <h3><%= total_siswa %></h3>
+          <p>Siswa</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <a href="/siswa" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">
+            Data Akun Aplikasi Pendataan Siswa Magang
+          </h3>
+          <button
+            class="btn btn-primary float-right"
+            type="button"
+            data-toggle="modal"
+            data-target="#modal_tambah"
+          >
+            Tambah Data
+          </button>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>No Hp</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th width="125px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_akun.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nama %></td>
+                <td><%= data.email %></td>
+                <td><%= data.no_hp %></td>
+                <td><%= data.password %></td>
+                <td><%= data.status %></td>
+                <td>
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_ubah<%= no %>"
+                  >
+                    Ubah
+                  </button>
+                  <form
+                    action="/akun?_method=DELETE"
+                    method="post"
+                    class="d-inline hapus_form"
+                  >
+                    <input
+                      type="hidden"
+                      name="id_login"
+                      value="<%= data.id_login %>"
+                    />
+                    <input type="hidden" name="nama" value="<%= data.nama %>" />
+                    <button
+                      class="btn btn-danger tbl_hapus"
+                      type="submit"
+                      id="button_hapus"
+                    >
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade"
+                id="modal_ubah<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Ubah Data Akun
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form method="post" action="/akun?_method=PUT">
+                      <input
+                        type="hidden"
+                        value="<%= data.id_login %>"
+                        name="id_login"
+                      />
+                      <input
+                        type="hidden"
+                        value="<%= data.email %>"
+                        name="oldEmail"
+                      />
+                      <div class="modal-body">
+                        <div class="form-group">
+                          <label for="nama">Nama</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="nama"
+                            placeholder="Masukan Nama"
+                            name="nama"
+                            required
+                            value="<%= data.nama %>"
+                          />
+                          <label for="email">Email</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            placeholder="Masukan Email"
+                            name="email"
+                            required
+                            value="<%= data.email %>"
+                          />
+                          <label for="no_hp">No Hp</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="no_hp"
+                            placeholder="Masukan No Hp"
+                            name="no_hp"
+                            required
+                            value="<%= data.no_hp %>"
+                          />
+                          <label for="nama">Password</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="password"
+                            placeholder="Masukan Password"
+                            name="password"
+                            required
+                            value="<%= data.password %>"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="status">Status</label>
+                          <select
+                            class="form-control"
+                            id="status"
+                            name="status"
+                            required
+                          >
+                            <option value="<%= data.status %>">
+                              <span class="text-capitalize"
+                                ><%= data.status.charAt(0).toUpperCase() +
+                                data.status.slice(1) %></span
+                              >
+                            </option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Ubah
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+
+        <!-- Modal Tambah -->
+        <div
+          class="modal fade"
+          id="modal_tambah"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Tambah Data Akun
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/akun" method="post">
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="nama">Nama</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nama"
+                      placeholder="Masukan Nama"
+                      name="nama"
+                      required
+                    />
+                    <label for="email">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      placeholder="Masukan Email"
+                      name="email"
+                      required
+                    />
+                    <label for="no_hp">No Hp</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="no_hp"
+                      placeholder="Masukan No Hp"
+                      name="no_hp"
+                      required
+                    />
+                    <label for="nama">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      placeholder="Masukan Password"
+                      name="password"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="status">Status</label>
+                    <select
+                      class="form-control"
+                      id="status"
+                      name="status"
+                      required
+                    >
+                      <option>Pilih Status</option>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="reset" class="btn btn-secondary">
+                    Bersihkan
+                  </button>
+                  <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

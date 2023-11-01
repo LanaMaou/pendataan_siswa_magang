@@ -1,0 +1,151 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title text-lg">Silahkan Isi Biodata</h3>
+    </div>
+    <div class="card-body">
+      <form action="/<%= formAction %>" method="post">
+        <div class="row">
+          <div class="form-kiri col-6">
+            <div class="form-group">
+              <input
+                type="hidden"
+                class="form-control"
+                id="oldNIS"
+                name="oldNIS"
+                value="<%= data_siswa.nis %>"
+              />
+              <input
+                type="hidden"
+                class="form-control"
+                id="id_siswa"
+                name="id_siswa"
+                value="<%= data_siswa.id_siswa %>"
+              />
+              <input
+                type="hidden"
+                class="form-control"
+                id="id_login"
+                name="id_login"
+                value="<%= id_login %>"
+              />
+              <label for="nis">NIS</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nis"
+                placeholder="Masukan Nis"
+                name="nis"
+                required
+                value="<%= data_siswa === '' ? '' : data_siswa.nis %>"
+              />
+              <label for="nama_siswa">Nama Lengkap</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nama_siswa_tambah"
+                placeholder="Masukan Nama Siswa"
+                name="nama_siswa"
+                required
+                value="<%= data_siswa === '' ? nama : data_siswa.nama_siswa %>"
+              />
+              <label for="nohp_siswa">No Hp Siswa</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nohp_siswa_tambah"
+                placeholder="Masukan No Hp Siswa"
+                name="nohp_siswa"
+                required
+                value="<%= data_siswa === '' ? no_hp : data_siswa.nohp_siswa %>"
+              />
+              <label for="alamat_siswa">Alamat Siswa</label>
+              <input
+                type="text"
+                class="form-control"
+                id="alamat_siswa"
+                placeholder="Masukan Alamat Siswa"
+                name="alamat_siswa"
+                required
+                value="<%= data_siswa === '' ? '' : data_siswa.alamat_siswa %>"
+              />
+              <label for="status_laporan">Status Laporan</label>
+              <input
+                type="text"
+                class="form-control"
+                id="status_laporan"
+                placeholder=""
+                name="status_laporan"
+                readonly
+                value="<%= data_siswa === '' ? 'Belum Laporan' : data_siswa.status_laporan %>"
+              />
+            </div>
+          </div>
+          <div class="form-kanan col-6">
+            <div class="form-group">
+              <label for="jenkel">Jenis Kelamin</label>
+              <select name="jenkel" id="jenkel" class="form-control">
+                <option
+                  value="<%= data_siswa === '' ? '' : data_siswa.jenkel%>"
+                >
+                  <%= data_siswa === '' ? 'Pilih Jenis Kelamin' :
+                  data_siswa.jenkel %>
+                </option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+              <label for="id_sekolah">Asal Sekolah</label>
+              <select
+                name="id_sekolah"
+                id="id_sekolah"
+                class="form-control"
+                required
+              >
+                <option
+                  value="<%= data_siswa === '' ? '' : data_siswa.id_sekolah %>"
+                >
+                  <%= data_siswa === '' ? 'Pilih Asal Sekolah' :
+                  data_siswa.nama_sekolah %>
+                </option>
+                <% data_sekolah.forEach(data => { %>
+                <option value="<%= data.id_sekolah %>">
+                  <%= data.nama_sekolah %>
+                </option>
+                <% }) %>
+              </select>
+              <label for="tempat_lahir">Tempat Lahir</label>
+              <input
+                type="text"
+                class="form-control"
+                id="tempat_lahir"
+                placeholder="Masukan Tempat Lahir"
+                name="tempat_lahir"
+                required
+                value="<%= data_siswa === '' ? '' : data_siswa.tempat_lahir %>"
+              />
+              <label for="tanggal_lahir">Tanggal Lahir</label>
+              <input
+                type="date"
+                class="form-control"
+                id="tanggal_lahir"
+                placeholder="Masukan Tanggal Lahir"
+                name="tanggal_lahir"
+                required
+                value="<%= data_siswa === '' ? '' : data_siswa.tanggal_lahir.toISOString().slice(0, 10)%>"
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+          <%= btnType !== '' ? 'Simpan' : 'Ubah' %>
+        </button>
+        <button type="reset" class="btn btn-secondary">
+          <%= btnType !== '' ? 'Bersihkan' : 'Atur Ulang' %>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

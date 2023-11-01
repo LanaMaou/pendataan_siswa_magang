@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title text-lg">Silahkan Isi Laporan</h3>
+    </div>
+    <div class="card-body">
+      <form
+        action="/<%= formAction %>"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div class="row">
+          <div class="form-kiri col-6">
+            <div class="form-group">
+              <input
+                type="hidden"
+                class="form-control"
+                id="id_login"
+                name="id_login"
+                value="<%= id_login %>"
+              />
+              <input
+                type="hidden"
+                class="form-control"
+                id="id_laporan"
+                name="id_laporan"
+                value="<%= data_laporan.id_laporan %>"
+              />
+              <input
+                type="hidden"
+                class="form-control"
+                id="id_siswa"
+                name="id_siswa"
+                value="<%= data_siswa.id_siswa %>"
+              />
+              <label for="nis">NIS</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nis"
+                name="nis"
+                readonly
+                value="<%= data_siswa.nis %>"
+              />
+              <label for="nama_siswa">Nama Lengkap</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nama_siswa_tambah"
+                name="nama_siswa"
+                readonly
+                value="<%= data_siswa.nama_siswa %>"
+              />
+              <label for="nohp_siswa">No Hp Siswa</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nohp_siswa_tambah"
+                name="nohp_siswa"
+                readonly
+                value="<%= data_siswa.nohp_siswa %>"
+              />
+              <label for="id_sekolah">Asal Sekolah</label>
+              <input
+                type="text"
+                class="form-control"
+                id="id_sekolah"
+                name="id_sekolah"
+                readonly
+                value="<%= data_siswa.nama_sekolah %>"
+              />
+              <label for="id_pembimbing">Nama Pembimbing</label>
+              <select
+                name="id_pembimbing"
+                id="id_pembimbing"
+                class="form-control"
+                required
+              >
+                <option value="<%= data_laporan.id_pembimbing %>">
+                  <%= data_laporan === '' ? 'Pilih Pembimbing' :
+                  data_laporan.nama_pembimbing %>
+                </option>
+                <% data_pembimbing.forEach(data => { %>
+                <option value="<%= data.id_pembimbing %>">
+                  <%= data.nama_pembimbing %>
+                </option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="form-kanan col-6">
+            <div class="form-group">
+              <label for="id_ruangan">Nama Ruangan</label>
+              <select
+                name="id_ruangan"
+                id="id_ruangan"
+                class="form-control"
+                required
+              >
+                <option value="<%= data_laporan.id_ruangan %>">
+                  <%= data_laporan === '' ? 'Pilih Ruangan' :
+                  data_laporan.nama_ruangan %>
+                </option>
+                <% data_ruangan.forEach(data => { %>
+                <option value="<%= data.id_ruangan%>">
+                  <%= data.nama_ruangan %>
+                </option>
+                <% }) %>
+              </select>
+              <label for="isi_laporan">Detail Laporan</label>
+              <textarea
+                type="text"
+                class="form-control"
+                id="isi_laporan"
+                placeholder="Masukan Isi Laporan"
+                name="isi_laporan"
+                required
+                rows="4"
+              >
+<%= data_laporan === '' ? '' : data_laporan.isi_laporan%></textarea
+              >
+              <label
+                for="oldLaporan"
+                class="<%= btnType !== '' ? 'd-none' : '' %>"
+                >Laporan Sebelumnya</label
+              >
+              <input
+                type="text"
+                class="form-control <%= btnType !== '' ? 'd-none' : '' %>"
+                id="oldLaporan"
+                name="oldLaporan"
+                readonly
+                value="<%= data_laporan.laporan %>"
+              />
+              <label for="laporan">Laporan</label>
+              <div class="input-group">
+                <div class="custom-file">
+                  <input
+                    type="file"
+                    class="custom-file-input"
+                    id="inputGroupFileAddon04"
+                    name="filename"
+                    aria-describedby="inputGroupFileAddon04"
+                  />
+                  <label class="custom-file-label" for="inputGroupFileAddon04"
+                    >Masukan Laporan</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <%= btnType !== '' ? 'Simpan' : 'Ubah' %>
+        </button>
+        <button type="reset" class="btn btn-secondary">
+          <%= btnType !== '' ? 'Bersihkan' : 'Atur Ulang' %>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

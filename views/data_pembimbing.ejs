@@ -1,0 +1,223 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Pembimbing</h3>
+          <button
+            class="btn btn-primary float-right"
+            type="button"
+            data-toggle="modal"
+            data-target="#modal_tambah"
+          >
+            Tambah Data
+          </button>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Pembimbing</th>
+                <th>No Hp</th>
+                <th>Email</th>
+                <th width="125px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_pembimbing.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nama_pembimbing %></td>
+                <td><%= data.nohp_pembimbing %></td>
+                <td><%= data.email_pembimbing %></td>
+                <td>
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_ubah<%= no %>"
+                  >
+                    Ubah
+                  </button>
+                  <form
+                    action="/pembimbing?_method=DELETE"
+                    method="post"
+                    class="d-inline hapus_form"
+                  >
+                    <input
+                      type="hidden"
+                      name="id_pembimbing"
+                      value="<%= data.id_pembimbing %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="nama"
+                      value="<%= data.nama_pembimbing %>"
+                    />
+                    <button
+                      class="btn btn-danger tbl_hapus"
+                      type="submit"
+                      id="button_hapus"
+                    >
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade"
+                id="modal_ubah<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Ubah Data Pembimbing
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form method="post" action="/pembimbing?_method=PUT">
+                      <input
+                        type="hidden"
+                        value="<%= data.id_pembimbing %>"
+                        name="id_pembimbing"
+                      />
+                      <input
+                        type="hidden"
+                        value="<%= data.email_pembimbing %>"
+                        name="oldEmail"
+                      />
+                      <div class="modal-body">
+                        <div class="form-group">
+                          <label for="nama">Nama Pembimbing</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="nama"
+                            placeholder="Masukan Nama"
+                            name="nama_pembimbing"
+                            required
+                            value="<%= data.nama_pembimbing %>"
+                          />
+                          <label for="email">Email Pembimbing</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            placeholder="Masukan Email"
+                            name="email_pembimbing"
+                            required
+                            value="<%= data.email_pembimbing %>"
+                          />
+                          <label for="no_hp">No Hp Pembimbing</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="no_hp"
+                            placeholder="Masukan No Hp"
+                            name="nohp_pembimbing"
+                            required
+                            value="<%= data.nohp_pembimbing %>"
+                          />
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Ubah
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+
+        <!-- Modal Tambah -->
+        <div
+          class="modal fade"
+          id="modal_tambah"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Tambah Data Pembimbing
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="/pembimbing" method="post">
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="nama_pembimbing">Nama Pembimbing</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nama_pembimbing"
+                      placeholder="Masukan Nama"
+                      name="nama_pembimbing"
+                      required
+                    />
+                    <label for="nohp_pembimbing">No Hp Pembimbing</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nohp_pembimbing"
+                      placeholder="Masukan No Hp"
+                      name="nohp_pembimbing"
+                      required
+                    />
+                    <label for="email_pembimbing">Email Pembimbing</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email_pembimbing"
+                      placeholder="Masukan Email"
+                      name="email_pembimbing"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="reset" class="btn btn-secondary">
+                    Bersihkan
+                  </button>
+                  <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

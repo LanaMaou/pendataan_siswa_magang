@@ -1,0 +1,562 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Laporan</h3>
+          <button
+            class="btn btn-primary float-right"
+            type="button"
+            data-toggle="modal"
+            data-target="#modal_tambah"
+          >
+            Tambah Data
+          </button>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nis</th>
+                <th>Nama</th>
+                <th>No Hp</th>
+                <th>Detail Laporan</th>
+                <th>Laporan</th>
+                <th width="200px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_laporan.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nis %></td>
+                <td><%= data.nama_siswa %></td>
+                <td><%= data.nohp_siswa %></td>
+                <td><%= data.isi_laporan%></td>
+                <td>
+                  <a
+                    href="/download/<%= data.laporan %>"
+                    class="btn btn-info d-block"
+                    >Unduh</a
+                  >
+                </td>
+                <td>
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_detail<%= no %>"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_ubah<%= no %>"
+                  >
+                    Ubah
+                  </button>
+                  <form
+                    action="/laporan?_method=DELETE"
+                    method="post"
+                    class="d-inline hapus_form"
+                  >
+                    <input
+                      type="hidden"
+                      name="id_laporan"
+                      value="<%= data.id_laporan %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="id_siswa"
+                      value="<%= data.id_siswa %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="nama"
+                      value="<%= data.nama_siswa %>"
+                    />
+                    <button
+                      class="btn btn-danger tbl_hapus"
+                      type="submit"
+                      id="button_hapus"
+                    >
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade modal-edit"
+                id="modal_ubah<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Ubah Data Laporan
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form
+                      action="/laporan?_method=PUT"
+                      method="post"
+                      enctype="multipart/form-data"
+                    >
+                      <div class="modal-body">
+                        <div class="form-2 row">
+                          <div class="form-kiri col-6">
+                            <div class="form-group">
+                              <input
+                                type="hidden"
+                                name="id_laporan"
+                                class="id_laporan"
+                                value="<%= data.id_laporan %>"
+                              />
+                              <input
+                                type="hidden"
+                                name="id_login"
+                                class="id_login"
+                                id="id_login_edit"
+                                value="<%= data.id_login %>"
+                              />
+                              <label for="nama_siswa">Nama Siswa</label>
+                              <select
+                                name="id_siswa"
+                                id="select_nama_edit"
+                                class="form-control select_nama_edit"
+                                onchange="tampilkanDataSiswaLaporanEdit()"
+                                required
+                              >
+                                <option
+                                  value="<%= data.id_siswa %>"
+                                  data-nis_siswa="<%= data.nis %>"
+                                  data-nohp_siswa="<%= data.nohp_siswa %>"
+                                  data-asal_sekolah="<%= data.nama_sekolah %>"
+                                  data-id_login="<%= data.id_login%>"
+                                >
+                                  <%= data.nama_siswa %>
+                                </option>
+                                <% data_siswa.forEach(data => { %>
+                                <option
+                                  value="<%= data.id_siswa %>"
+                                  data-nis_siswa="<%= data.nis %>"
+                                  data-nohp_siswa="<%= data.nohp_siswa %>"
+                                  data-asal_sekolah="<%= data.nama_sekolah %>"
+                                  data-id_login="<%= data.id_login%>"
+                                >
+                                  <%= data.nama_siswa %>
+                                </option>
+                                <% }) %>
+                              </select>
+                              <label for="nis">NIS</label>
+                              <input
+                                type="text"
+                                class="form-control nis_siswa_edit"
+                                id="nis_siswa_edit"
+                                placeholder="Masukan Nis"
+                                name="nis"
+                                readonly
+                                value="<%= data.nis %>"
+                              />
+                              <label for="nohp_siswa">No Hp Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control nohp_siswa_edit"
+                                id="nohp_siswa_edit"
+                                placeholder="Masukan No Hp Siswa"
+                                name="nohp_siswa"
+                                readonly
+                                value="<%= data.nohp_siswa %>"
+                              />
+                              <label for="nama_sekolah">Asal Sekolah</label>
+                              <input
+                                type="text"
+                                class="form-control nama_sekolah_edit"
+                                id="nama_sekolah_edit"
+                                placeholder="Masukan Asal Sekolah"
+                                name="nama_sekolah"
+                                readonly
+                                value="<%= data.nama_sekolah %>"
+                              />
+                              <label for="id_pembimbing">Nama Pembimbing</label>
+                              <select
+                                name="id_pembimbing"
+                                id="id_pembimbing"
+                                class="form-control"
+                                required
+                              >
+                                <option value="<%= data.id_pembimbing %>">
+                                  <%= data.nama_pembimbing %>
+                                </option>
+                                <% data_pembimbing.forEach(data => { %>
+                                <option value="<%= data.id_pembimbing %>">
+                                  <%= data.nama_pembimbing %>
+                                </option>
+                                <% }) %>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-kanan col-6">
+                            <div class="form-group">
+                              <label for="id_ruangan">Nama Ruangan</label>
+                              <select
+                                name="id_ruangan"
+                                id="id_ruangan"
+                                class="form-control"
+                                required
+                              >
+                                <option value="<%= data.id_ruangan %>">
+                                  <%= data.nama_ruangan %>
+                                </option>
+                                <% data_ruangan.forEach(data => { %>
+                                <option value="<%= data.id_ruangan%>">
+                                  <%= data.nama_ruangan %>
+                                </option>
+                                <% }) %>
+                              </select>
+                              <label for="isi_laporan">Detail Laporan</label>
+                              <textarea
+                                type="text"
+                                class="form-control"
+                                id="isi_laporan"
+                                placeholder="Masukan Isi Laporan"
+                                name="isi_laporan"
+                                required
+                                value="<%= data.isi_laporan %>"
+                              >
+<%= data.isi_laporan %></textarea
+                              >
+                              <label for="oldLaporan">Laporan Sebelumnya</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                name="oldLaporan"
+                                readonly
+                                value="<%= data.laporan %>"
+                              />
+                              <label for="laporan">Laporan</label>
+                              <div class="input-group">
+                                <div class="custom-file">
+                                  <input
+                                    type="file"
+                                    class="custom-file-input input-file-edit"
+                                    id="inputGroupFileAddon04"
+                                    name="filename"
+                                    aria-describedby="inputGroupFileAddon04"
+                                  />
+                                  <label
+                                    class="custom-file-label label-file-edit"
+                                    for="inputGroupFileAddon04"
+                                    >Masukan Laporan</label
+                                  >
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="reset"
+                          class="btn btn-secondary btn-reset-edit"
+                          onclick="resetInputFileEdit()"
+                        >
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Ubah
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Modal Detail -->
+              <div
+                class="modal fade"
+                id="modal_detail<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Detail Data Siswa
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-2 row">
+                        <div class="form-kiri col-6">
+                          <div class="form-group">
+                            <label for="nis">NIS</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nis"
+                              name="nis"
+                              readonly
+                              value="<%= data.nis %>"
+                            />
+                            <label for="nama_siswa">Nama Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nama_siswa"
+                              name="nama_siswa"
+                              readonly
+                              value="<%= data.nama_siswa %>"
+                            />
+                            <label for="nohp_siswa">No Hp Siswa</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nohp_siswa"
+                              name="nohp_siswa"
+                              readonly
+                              value="<%= data.nohp_siswa%>"
+                            />
+                            <label for="asal_sekolah">Asal Sekolah</label>
+                            <input
+                              type="text"
+                              class="form-control asal_sekolah"
+                              id="asal_sekolah"
+                              name="asal_sekolah"
+                              readonly
+                              value="<%= data.nama_sekolah %>"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-kanan col-6">
+                          <div class="form-group">
+                            <label for="nama_pembimbing">Nama Pembimbing</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nama_pembimbing"
+                              name="nama_pembimbing"
+                              readonly
+                              value="<%= data.nama_pembimbing %>"
+                            />
+                            <label for="nama_ruangan">Nama Ruangan</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="nama_ruangan"
+                              name="nama_ruangan"
+                              readonly
+                              value="<%= data.nama_ruangan %>"
+                            />
+                            <label for="isi_laporan">Detail Laporan</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="isi_laporan"
+                              name="isi_laporan"
+                              readonly
+                              value="<%= data.isi_laporan%>"
+                            />
+                            <label for="isi_laporan">Laporan</label>
+                            <a
+                              href="/download/<%= data.laporan %>"
+                              class="btn btn-info d-block"
+                              >Unduh</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+
+        <!-- Modal Tambah -->
+        <div
+          class="modal fade"
+          id="modal_tambah"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Tambah Data Laporan
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form
+                action="/laporan"
+                method="post"
+                enctype="multipart/form-data"
+              >
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="form-kiri col-6">
+                      <div class="form-group">
+                        <input
+                          type="hidden"
+                          name="id_login"
+                          id="id_login_tambah"
+                        />
+                        <label for="nama_siswa">Nama Siswa</label>
+                        <select
+                          name="id_siswa"
+                          id="select_nama_tambah"
+                          class="form-control"
+                          onchange="tampilkanDataSiswaLaporan()"
+                          required
+                        >
+                          <option value="">Pilih Nama Siswa</option>
+                          <% data_siswa.forEach(data => { %>
+                          <option
+                            value="<%= data.id_siswa %>"
+                            data-nis_siswa="<%= data.nis %>"
+                            data-nohp_siswa="<%= data.nohp_siswa %>"
+                            data-asal_sekolah="<%= data.nama_sekolah %>"
+                            data-id_login="<%= data.id_login%>"
+                          >
+                            <%= data.nama_siswa %>
+                          </option>
+                          <% }) %>
+                        </select>
+                        <label for="nis">NIS</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nis_siswa_tambah"
+                          placeholder="Masukan Nis"
+                          name="nis"
+                          readonly
+                        />
+                        <label for="nohp_siswa">No Hp Siswa</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nohp_siswa_tambah"
+                          placeholder="Masukan No Hp Siswa"
+                          name="nohp_siswa"
+                          readonly
+                        />
+                        <label for="nama_sekolah">Asal Sekolah</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="nama_sekolah_tambah"
+                          placeholder="Masukan Asal Sekolah"
+                          name="nama_sekolah"
+                          readonly
+                        />
+                        <label for="id_pembimbing">Nama Pembimbing</label>
+                        <select
+                          name="id_pembimbing"
+                          id="id_pembimbing"
+                          class="form-control"
+                          required
+                        >
+                          <option value="">Pilih Pembimbing</option>
+                          <% data_pembimbing.forEach(data => { %>
+                          <option value="<%= data.id_pembimbing %>">
+                            <%= data.nama_pembimbing %>
+                          </option>
+                          <% }) %>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-kanan col-6">
+                      <div class="form-group">
+                        <label for="id_ruangan">Nama Ruangan</label>
+                        <select
+                          name="id_ruangan"
+                          id="id_ruangan"
+                          class="form-control"
+                          required
+                        >
+                          <option value="">Pilih Ruangan</option>
+                          <% data_ruangan.forEach(data => { %>
+                          <option value="<%= data.id_ruangan%>">
+                            <%= data.nama_ruangan %>
+                          </option>
+                          <% }) %>
+                        </select>
+                        <label for="isi_laporan">Detail Laporan</label>
+                        <textarea
+                          type="text"
+                          class="form-control"
+                          id="isi_laporan"
+                          placeholder="Masukan Isi Laporan"
+                          name="isi_laporan"
+                          required
+                        ></textarea>
+                        <label for="laporan">Laporan</label>
+                        <div class="input-group">
+                          <div class="custom-file">
+                            <input
+                              type="file"
+                              class="custom-file-input"
+                              id="inputGroupFileAddon04"
+                              name="filename"
+                              aria-describedby="inputGroupFileAddon04"
+                            />
+                            <label
+                              class="custom-file-label"
+                              for="inputGroupFileAddon04"
+                              >Masukan Laporan</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="reset" class="btn btn-secondary">
+                    Bersihkan
+                  </button>
+                  <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
