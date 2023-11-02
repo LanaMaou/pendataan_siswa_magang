@@ -1308,7 +1308,7 @@ app.get("/laporan_user", async (req, res) => {
           halaman: "Menu Laporan",
           activePage: "laporan_user",
           formAction: "laporan_user?_method=PUT",
-          btnType: "",
+          btnType: "submit",
           blocked: "",
         });
       } else {
