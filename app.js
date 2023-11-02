@@ -124,6 +124,7 @@ app.post("/masuk", async (req, res) => {
       req.session.password = akun.password;
       req.session.nama = akun.nama;
       req.session.no_hp = akun.no_hp;
+      req.session.status = akun.status;
       req.session.login = true;
 
       req.flash("berhasil", `Selamat Datang, ${akun.nama}`);
@@ -151,6 +152,7 @@ app.get("/keluar", (req, res) => {
   req.session.password = "";
   req.session.nama = "";
   req.session.no_hp = "";
+  req.session.status = "";
   req.session.login = false;
 
   req.flash("keluar", "Anda Telah Keluar!");
