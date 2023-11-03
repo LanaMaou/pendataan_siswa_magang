@@ -1309,7 +1309,7 @@ app.get("/laporan_user", async (req, res) => {
           data_ruangan,
           halaman: "Menu Laporan",
           activePage: "laporan_user",
-          formAction: "laporan_user?_method=PUT",
+          formAction: "laporan_user",
           btnType: "submit",
           blocked: "",
         });
@@ -1328,8 +1328,8 @@ app.get("/laporan_user", async (req, res) => {
           data_ruangan,
           halaman: "Menu Laporan",
           activePage: "laporan_user",
-          formAction: "laporan_user?_method=PUT",
-          btnType: "",
+          formAction: "laporan_user",
+          btnType: "submit",
           blocked: "block",
         });
       }
