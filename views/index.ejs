@@ -37,18 +37,20 @@
       <img
         src="/img/note.png"
         alt="note"
-        class="absolute left-4 z-10 h-20 w-20 -rotate-[40deg]"
+        class="absolute left-4 z-10 hidden h-20 w-20 -rotate-[40deg] md:block"
       />
-      <div class="container absolute z-20 flex items-center justify-between">
+      <div
+        class="container absolute z-20 flex items-center justify-center md:justify-between"
+      >
         <div
-          class="flex items-center justify-center rounded-br-xl rounded-tl-xl bg-yellow-300 p-1 shadow-[2px_2px_2px_.3px_rgba(255,255,255,.5)]"
+          class="flex items-center justify-center rounded-br-xl rounded-tl-xl bg-yellow-300 p-1 shadow-lg"
         >
-          <span class="text-2xl text-black"
+          <span class="text-lg text-black sm:text-3xl md:text-2xl"
             >Aplikasi Pendataan Siswa Magang</span
           >
         </div>
         <div
-          class="terkecuali flex h-full w-52 items-center justify-center gap-2"
+          class="terkecuali hidden h-full w-52 items-center justify-center gap-2 md:flex"
         >
           <a href="#" class="tombol-log tombol-masuk"> MASUK </a>
           <a href="#" class="tombol-log tombol-daftar"> DAFTAR </a>
@@ -61,20 +63,20 @@
     <main class="absolute h-[100%] w-full overflow-hidden font-quicksand">
       <!-- Page Daftar -->
       <div
-        class="terkecuali page-daftar absolute right-24 top-10 z-30 flex h-[80%] w-[30%] translate-x-[100vw] items-center justify-center rounded-3xl bg-white shadow-[0px_0px_3px_2px_rgba(0,0,0,.3)] shadow-sky-300 transition duration-500 ease-in-out"
+        class="terkecuali page-daftar absolute right-[8%] sm:right-6 lg:right-24 top-10 z-30 flex h-[80%] w-[85%] sm:w-[40%] lg:w-[30%] translate-x-[100vw] items-center justify-center rounded-3xl bg-white shadow-[0px_0px_3px_2px_rgba(0,0,0,.3)] shadow-sky-300 transition duration-500 ease-in-out"
       >
         <div
           class="terkecuali prev-daftar absolute right-4 top-2 h-4 w-5 cursor-pointer"
         >
           <i class="fa-solid fa-arrow-right text-xl text-sky-600"></i>
         </div>
-        <div class="flex h-[90%] w-[90%]">
+        <div class="flex h-[90%] w-[90%] sm:w-[100%] md:w-[90%]">
           <form
             action="/daftar"
             class="terkecuali form-daftar flex h-full w-full flex-col items-center"
             method="post"
           >
-            <h1 class="mt-6 text-center text-2xl font-semibold text-sky-500">
+            <h1 class="mt-6 text-center text-2xl font-semibold text-sky-500 sm:text-xl lg:text-2xl">
               Buat Akunmu Sekarang
             </h1>
             <p class="text-center text-sm font-semibold text-slate-600">
@@ -155,14 +157,14 @@
 
       <!-- Page Masuk -->
       <div
-        class="terkecuali page-masuk absolute right-24 top-10 z-30 flex h-[80%] w-[30%] translate-x-[100vw] items-center justify-center rounded-3xl bg-white shadow-[0px_0px_3px_2px_rgba(0,0,0,.3)] shadow-sky-300 transition duration-500 ease-in-out"
+        class="terkecuali page-masuk absolute right-[8%] sm:right-6 lg:right-24 top-10 z-30 flex h-[80%] w-[85%] sm:w-[40%] lg:w-[30%] translate-x-[100vw] items-center justify-center rounded-3xl bg-white shadow-[0px_0px_3px_2px_rgba(0,0,0,.3)] shadow-sky-300 transition duration-500 ease-in-out"
       >
         <div class="prev-masuk absolute right-4 top-2 h-4 w-5 cursor-pointer">
           <i
             class="fa-solid fa-arrow-right prev-masuk text-xl text-sky-600"
           ></i>
         </div>
-        <div class="flex h-[90%] w-[90%]">
+        <div class="flex h-[90%] w-[90%] sm:w-[100%] md:w-[90%]">
           <form
             action=""
             class="form-masuk flex h-full w-full flex-col items-center"
@@ -222,23 +224,29 @@
       <div
         class="takterkecuali container mx-auto flex h-full flex-wrap justify-center"
       >
-        <div class="judul flex h-full w-1/2 flex-col justify-center">
-          <div class="pointer-events-none block md:h-48 lg:h-32">
-            <h1 class="text-center text-5xl font-bold leading-snug text-black">
-              <span class="bg-judul text-judul">Selamat Datang</span>
+        <div
+          class="judul order-2 flex h-full w-full max-w-[500px] flex-col justify-start sm:order-1 sm:w-1/2 sm:justify-center lg:max-w-none"
+        >
+          <div class="pointer-events-none block h-16 sm:h-24 md:h-32 lg:h-48 xl:h-36">
+            <h1
+              class="text-center text-xl lg:leading-snug font-bold text-black sm:text-2xl md:text-3xl lg:text-5xl"
+            >
+              <span class="bg-judul text-judul">Selamat Datang</span> 
               <span class="ketikan text-judul"></span>
-              <span class="-ml-3">|</span>
+              <span class="-ml-[5px] lg:-ml-3">|</span>
             </h1>
           </div>
-          <p class="text-xl text-slate-600">
+          <p class="text-center text-lg text-slate-600 lg:text-xl">
             Mempermudah Anda dalam Mengelola dan Menyimpan Data Siswa Magang
             dengan Lebih Efisien.
           </p>
 
-          <div class="px-16">
+          <div class="px-1 text-sm sm:px-16 lg:text-base">
             <div class="mt-10 flex cursor-default items-center">
-              <div class="inline-block rounded-md pl-1 shadow-inner">
-                <div class="mr-2 inline-block">Belum Punya Akun?</div>
+              <div
+                class="inline-block rounded-full pl-1 shadow-inner sm:rounded-full sm:text-center md:rounded-full"
+              >
+                <div class="inline-block md:mr-2">Belum Punya Akun?</div>
                 <div class="inline-block">
                   <a href="#" class="tombol-akun tombol-daftar terkecuali"
                     >Buat Akun Sekarang</a
@@ -248,8 +256,10 @@
             </div>
 
             <div class="mt-5 flex cursor-default items-center justify-end">
-              <div class="inline-block rounded-md pl-1 shadow-inner">
-                <div class="mr-2 inline-block">Sudah Punya Akun?</div>
+              <div
+                class="inline-block rounded-full pl-1 shadow-inner sm:rounded-full sm:text-center md:rounded-full"
+              >
+                <div class="inline-block md:mr-2">Sudah Punya Akun?</div>
                 <div class="inline-block">
                   <a href="#" class="tombol-akun tombol-masuk terkecuali"
                     >Silahkan Masuk</a
@@ -260,15 +270,17 @@
           </div>
         </div>
 
-        <div class="content w-1/2">
-          <div class="flex h-full w-full items-center justify-end">
+        <div class="content order-1 w-1/2 sm:order-2 sm:block">
+          <div
+            class="flex h-full w-full items-center justify-center sm:justify-end"
+          >
             <div
               class="ilustrasi terkecuali transition-all duration-200 ease-in-out"
             >
               <img
                 src="/img/Data_report.svg"
                 alt="Data_report"
-                class="h-[420px] w-[420px]"
+                class="w-[420px] my-10 sm:my-0"
               />
             </div>
           </div>

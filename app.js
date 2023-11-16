@@ -8,6 +8,8 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const path = require("path");
 
+// Koneksi database
+require("dotenv").config();
 const db = require("./utils/db");
 
 const app = express();
