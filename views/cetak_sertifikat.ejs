@@ -1,0 +1,172 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title text-lg">Data Laporan</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="dataTables" class="table-bordered table-striped table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nis</th>
+                <th>Nama</th>
+                <th>No Hp</th>
+                <th>Asal Sekolah</th>
+                <th width="150px">Opsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% data_laporan.forEach((data, no) => {no++ %>
+              <tr>
+                <td><%= no %></td>
+                <td><%= data.nis %></td>
+                <td><%= data.nama_siswa %></td>
+                <td><%= data.nohp_siswa %></td>
+                <td><%= data.nama_sekolah%></td>
+                <td class="text-center">
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_sertifikat<%= no %>"
+                  >
+                    <i class="nav-icon fas fa-print"></i>
+                    Cetak Sertifikat
+                  </button>
+                </td>
+              </tr>
+              <!-- Modal Ubah -->
+              <div
+                class="modal fade modal-edit"
+                id="modal_sertifikat<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Cetak Sertifikat
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form
+                      action="/cetak_sertifikat"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        <div class="form-2 row">
+                          <div class="col-12">
+                            <div class="form-group">
+                              <input
+                                type="hidden"
+                                name="id_laporan"
+                                class="id_laporan"
+                                value="<%= data.id_laporan %>"
+                              />
+                              <input
+                                type="hidden"
+                                name="id_login"
+                                class="id_login"
+                                id="id_login_edit"
+                                value="<%= data.id_login %>"
+                              />
+                              <label for="nama_siswa">Nama Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nama_siswa"
+                                placeholder="Masukan Nis"
+                                name="nama_siswa"
+                                readonly
+                                value="<%= data.nama_siswa %>"
+                              />
+                              <label for="nis">NIS</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nis_siswa_edit"
+                                placeholder="Masukan Nis"
+                                name="nis"
+                                readonly
+                                value="<%= data.nis %>"
+                              />
+                              <label for="nohp_siswa">No Hp Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nohp_siswa_edit"
+                                placeholder="Masukan No Hp Siswa"
+                                name="nohp_siswa"
+                                readonly
+                                value="<%= data.nohp_siswa %>"
+                              />
+                              <label for="nama_sekolah">Asal Sekolah</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nama_sekolah_edit"
+                                placeholder="Masukan Asal Sekolah"
+                                name="nama_sekolah"
+                                readonly
+                                value="<%= data.nama_sekolah %>"
+                              />
+                              <label for="nilai_magang">Nilai Magang <span class="font-weight-normal">(Dari 1 - 100)</span></label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="100"
+                                required
+                                class="form-control"
+                                id="nilai_magang"
+                                placeholder="Masukan Nilai Magang"
+                                name="nilai_magang"
+                              />
+                              <label for="grade">Grade <span class="font-weight-normal">(Dari D - A)</span></label>
+                              <input
+                                type=""
+                                class="form-control"
+                                id="grade"
+                                required
+                                name="grade"
+                                readonly
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="reset"
+                          class="btn btn-secondary btn-reset-edit"
+                        >
+                          Atur Ulang
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Cetak
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const expressLayouts = require("express-ejs-layouts");
 const { body, validationResult, check } = require("express-validator");
 const methodOverride = require("method-override");
@@ -7,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const multer = require("multer");
 const path = require("path");
+const { createCanvas, loadImage, registerFont } = require('canvas');
 
 // Koneksi database
 require("dotenv").config();
@@ -1397,6 +1399,96 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
     console.log(err.message);
     req.flash("gagal", err.message);
     res.redirect("/laporan_user");
+  }
+});
+
+//
+// Cetak Sertifikat
+app.get("/cetak_sertifikat", async (req, res) => {
+  if (req.session.login) {
+    const data_laporan = await db("data_laporan")
+      .join(
+        "data_pembimbing",
+        "data_laporan.id_pembimbing",
+        "=",
+        "data_pembimbing.id_pembimbing",
+      )
+      .join(
+        "data_ruangan",
+        "data_laporan.id_ruangan",
+        "=",
+        "data_ruangan.id_ruangan",
+      )
+      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+      .join(
+        "data_sekolah",
+        "data_siswa.id_sekolah",
+        "=",
+        "data_sekolah.id_sekolah",
+      )
+      .select(
+        "data_laporan.*",
+        "data_pembimbing.*",
+        "data_ruangan.*",
+        "data_siswa.*",
+        "data_sekolah.nama_sekolah",
+      );
+    res.render("cetak_sertifikat", {
+      layout: "layouts/layout-admin",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_laporan,
+      halaman: "Cetak Sertifikat",
+      activePage: "cetak_sertifikat",
+    });
+  } else {
+    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
+    res.redirect("/");
+  }
+});
+
+app.post("/cetak_sertifikat", async (req, res) => {
+  const {nama_siswa, nilai_magang} = req.body;
+  try {
+    // Load gambar sertifikat (template)
+    const backgroundImage = await loadImage(
+      "sertifikat/templete_sertifikat.png",
+    ); // Ganti dengan path gambar template Anda
+
+    // Buat canvas
+    const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
+    const ctx = canvas.getContext("2d");
+
+    // Gambar template
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+    // Tambahkan teks atau informasi lainnya
+    ctx.font = '80px "Ephesis"'; // Ganti dengan font yang diinginkan
+    ctx.fillStyle = "#2B5F9C";
+
+    // Tambahkan nama penerima
+    const textWidth = ctx.measureText(nama_siswa).width;
+    const xPos = canvas.width / 2 - textWidth / 2; // Menghitung posisi X untuk teks di tengah
+    const yPos = 750;
+    ctx.fillText(nama_siswa, xPos, yPos); // Ganti dengan posisi dan teks yang diinginkan
+
+    // Simpan sertifikat sebagai file
+    const outputFile = "sertifikat.png"; // Nama file output
+    const out = fs.createWriteStream(outputFile);
+    const stream = canvas.createPNGStream();
+    stream.pipe(out);
+
+    // Kirim sertifikat sebagai respon
+    out.on("finish", () => {
+      res.sendFile(path.join(__dirname, outputFile)); // Kirim file sebagai respon
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
   }
 });
 
