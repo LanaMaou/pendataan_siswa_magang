@@ -571,5 +571,67 @@
         });
       }
     </script>
+
+    <!-- Fungsi Penilaian -->
+    <script>
+      // function nilaiGrade() {
+      //   const inputNilais = document.querySelectorAll(".input-penilaian");
+
+      //   inputNilais.forEach((input) => {
+      //     const inputValue = input.value;
+      //     console.log(inputValue);
+      //     const modal = input.closest(".modal-nilai");
+
+      //     if (modal) {
+      //       const inputGrade = modal.querySelector(".input-grade");
+
+      //       if (inputValue > 0 && inputValue <= 65) {
+      //         inputGrade.value = "D";
+      //       } else if (inputValue > 65 && inputValue <= 75) {
+      //         inputGrade.value = "C";
+      //       } else if (inputValue > 75 && inputValue <= 85) {
+      //         inputGrade.value = "B";
+      //       } else if (inputValue > 85 && inputValue <= 100) {
+      //         inputGrade.value = "A";
+      //       } else if (inputValue > 100) {
+      //         input.value = 100;
+      //         inputGrade.value = "A";
+      //       } else {
+      //         inputGrade.value = "Masukan nilai dengan benar";
+      //       }
+      //     }
+      //   });
+      // }
+
+      const inputNilais = document.querySelectorAll(".input-penilaian");
+
+      inputNilais.forEach((input) => {
+        input.addEventListener("input", function () {
+          const inputValue = this.value;
+          console.log(inputValue);
+
+          const modal = this.closest(".modal-nilai");
+
+          if (modal) {
+            const inputGrade = modal.querySelector(".input-grade");
+
+            if (inputValue > 0 && inputValue <= 65) {
+              inputGrade.value = "D";
+            } else if (inputValue > 65 && inputValue <= 75) {
+              inputGrade.value = "C";
+            } else if (inputValue > 75 && inputValue <= 85) {
+              inputGrade.value = "B";
+            } else if (inputValue > 85 && inputValue <= 100) {
+              inputGrade.value = "A";
+            } else if (inputValue > 100) {
+              input.value = 100;
+              inputGrade.value = "A";
+            } else {
+              inputGrade.value = "Tolong masukan nilai";
+            }
+          }
+        });
+      });
+    </script>
   </body>
 </html>

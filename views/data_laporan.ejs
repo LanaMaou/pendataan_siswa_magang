@@ -23,7 +23,7 @@
                 <th>Nama</th>
                 <th>No Hp</th>
                 <th>Detail Laporan</th>
-                <th>Laporan</th>
+                <th>Penilaian</th>
                 <th width="200px">Opsi</th>
               </tr>
             </thead>
@@ -36,11 +36,14 @@
                 <td><%= data.nohp_siswa %></td>
                 <td><%= data.isi_laporan%></td>
                 <td>
-                  <a
-                    href="/download/<%= data.laporan %>"
-                    class="btn btn-info d-block"
-                    >Unduh</a
+                  <button
+                    class="btn btn-<%= data.nilai ? 'info' : 'danger' %>"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#modal_nilai<%= no %>"
                   >
+                    <%= data.nilai ? 'Sudah' : 'Belum' %>
+                  </button>
                 </td>
                 <td>
                   <button
@@ -89,6 +92,7 @@
                   </form>
                 </td>
               </tr>
+              <!--  -->
               <!-- Modal Ubah -->
               <div
                 class="modal fade modal-edit"
@@ -286,6 +290,7 @@
                   </div>
                 </div>
               </div>
+              <!--  -->
               <!-- Modal Detail -->
               <div
                 class="modal fade"
@@ -310,7 +315,7 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                      <div class="form-2 row">
+                      <div class="form-2 row pb-5 pt-3">
                         <div class="form-kiri col-6">
                           <div class="form-group">
                             <label for="nis">NIS</label>
@@ -381,15 +386,150 @@
                               value="<%= data.isi_laporan%>"
                             />
                             <label for="isi_laporan">Laporan</label>
-                            <a
-                              href="/download/<%= data.laporan %>"
-                              class="btn btn-info d-block"
-                              >Unduh</a
-                            >
+                            <div class="input-group">
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="laporan"
+                                name="laporan"
+                                readonly
+                                value="<%= data.laporan%>"
+                              />
+                              <a
+                                href="/download/<%= data.laporan %>"
+                                class="btn btn-info d-block"
+                                >Unduh</a
+                              >
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+              <!--  -->
+              <!-- Modal Nilai -->
+              <div
+                class="modal fade modal-nilai"
+                id="modal_nilai<%= no %>"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                        Penilaian
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <form
+                      action="/<%= data.nilai ? 'penilaian?_method=PUT' : 'penilaian' %>"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        <div class="form-2 row">
+                          <div class="form-kiri col-12">
+                            <div class="form-group">
+                              <input
+                                type="hidden"
+                                name="id_laporan"
+                                value="<%= data.id_laporan %>"
+                              />
+                              <input
+                                type="hidden"
+                                name="id_nilai"
+                                value="<%= data.id_nilai || '' %>"
+                              />
+                              <label for="nis">NIS</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Masukan Nis"
+                                name="nis"
+                                readonly
+                                value="<%= data.nis %>"
+                              />
+                              <label for="nama_siswa">Nama Siswa</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Masukan Nis"
+                                name="nama_siswa"
+                                readonly
+                                value="<%= data.nama_siswa %>"
+                              />
+                              <label for="isi_laporan">Laporan</label>
+                              <div class="input-group">
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="laporan"
+                                  name="laporan"
+                                  readonly
+                                  value="<%= data.laporan%>"
+                                />
+                                <a
+                                  href="/download/<%= data.laporan %>"
+                                  class="btn btn-info d-block"
+                                  >Unduh</a
+                                >
+                              </div>
+                              <label for="nilai"
+                                >Nilai
+                                <span class="font-weight-normal"
+                                  >(Maksimal 100)</span
+                                ></label
+                              >
+                              <input
+                                type="number"
+                                class="form-control input-penilaian"
+                                id="nilai"
+                                max="100"
+                                oninput=""
+                                placeholder="Masukan Nilai"
+                                name="nilai"
+                                value="<%= data.nilai || '' %>"
+                              />
+                              <label for="grade"
+                                >Grade
+                                <span class="font-weight-normal"
+                                  >(Dari D - A)</span
+                                ></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control input-grade"
+                                id="grade"
+                                name="grade"
+                                readonly
+                                value="<%= data.grade || '' %>"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="reset"
+                          class="btn btn-secondary btn-reset-edit"
+                        >
+                          <%= data.nilai ? 'Atur Ulang' : 'Bersihkan' %>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          <%= data.nilai ? 'Ubah' : 'Nilai' %>
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -524,6 +664,7 @@
                           placeholder="Masukan Isi Laporan"
                           name="isi_laporan"
                           required
+                          rows="4"
                         ></textarea>
                         <label for="laporan">Laporan</label>
                         <div class="input-group">

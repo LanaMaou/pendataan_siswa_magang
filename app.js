@@ -8,7 +8,9 @@ const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const multer = require("multer");
 const path = require("path");
-const { createCanvas, loadImage, registerFont } = require('canvas');
+const { createCanvas, loadImage } = require("canvas");
+const PDFDocument = require("pdfkit");
+const PNG = require("png-js");
 
 // Koneksi database
 require("dotenv").config();
@@ -934,60 +936,69 @@ app.delete("/siswa", async (req, res) => {
 // Halaman Laporan
 app.get("/laporan", async (req, res) => {
   if (req.session.login) {
-    const data_laporan = await db("data_laporan")
-      .join(
-        "data_pembimbing",
-        "data_laporan.id_pembimbing",
-        "=",
-        "data_pembimbing.id_pembimbing",
-      )
-      .join(
-        "data_ruangan",
-        "data_laporan.id_ruangan",
-        "=",
-        "data_ruangan.id_ruangan",
-      )
-      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .select(
-        "data_laporan.*",
-        "data_pembimbing.*",
-        "data_ruangan.*",
-        "data_siswa.*",
-        "data_sekolah.nama_sekolah",
-      );
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .where({
-        status_laporan: "Belum Laporan",
-      });
-    const data_pembimbing = await db("data_pembimbing");
-    const data_ruangan = await db("data_ruangan");
-    res.render("data_laporan", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_laporan,
-      data_siswa,
-      data_pembimbing,
-      data_ruangan,
-      halaman: "Menu Laporan",
-      activePage: "laporan",
+  const data_laporan = await db("data_laporan")
+    .join(
+      "data_pembimbing",
+      "data_laporan.id_pembimbing",
+      "=",
+      "data_pembimbing.id_pembimbing",
+    )
+    .join(
+      "data_ruangan",
+      "data_laporan.id_ruangan",
+      "=",
+      "data_ruangan.id_ruangan",
+    )
+    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .leftJoin(
+      "data_nilai",
+      "data_laporan.id_laporan",
+      "=",
+      "data_nilai.id_laporan",
+    )
+    .select(
+      "data_laporan.*",
+      "data_pembimbing.*",
+      "data_ruangan.*",
+      "data_siswa.*",
+      "data_sekolah.nama_sekolah",
+      "data_nilai.id_nilai",
+      "data_nilai.nilai",
+      "data_nilai.grade",
+    );
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .where({
+      status_laporan: "Belum Laporan",
     });
+  const data_pembimbing = await db("data_pembimbing");
+  const data_ruangan = await db("data_ruangan");
+  res.render("data_laporan", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_laporan,
+    data_siswa,
+    data_pembimbing,
+    data_ruangan,
+    halaman: "Menu Laporan",
+    activePage: "laporan",
+  });
   } else {
     req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
     res.redirect("/");
@@ -1063,6 +1074,40 @@ app.delete("/laporan", async (req, res) => {
     res.redirect("/laporan");
   } catch (err) {
     console.log(err);
+  }
+});
+
+// Penilaian
+app.post("/penilaian", async (req, res) => {
+  const { nilai, grade, id_laporan } = req.body;
+  try {
+    await db("data_nilai").insert({
+      nilai,
+      grade,
+      id_laporan,
+    });
+    req.flash("berhasil", "Data Nilai Berhasil Ditambahkan!");
+    res.redirect("/laporan");
+  } catch (err) {
+    console.log(err.message);
+    req.flash("gagal", err.message);
+    res.redirect("/laporan");
+  }
+});
+
+app.put("/penilaian", async (req, res) => {
+  const { id_nilai, nilai, grade } = req.body;
+  try {
+    await db("data_nilai").where({ id_nilai }).update({
+      nilai,
+      grade,
+    });
+    req.flash("berhasil", "Data Nilai Berhasil Diubah!");
+    res.redirect("/laporan");
+  } catch (err) {
+    console.log(err.message);
+    req.flash("gagal", err.message);
+    res.redirect("/laporan");
   }
 });
 
@@ -1406,45 +1451,22 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
 // Cetak Sertifikat
 app.get("/cetak_sertifikat", async (req, res) => {
   if (req.session.login) {
-    const data_laporan = await db("data_laporan")
-      .join(
-        "data_pembimbing",
-        "data_laporan.id_pembimbing",
-        "=",
-        "data_pembimbing.id_pembimbing",
-      )
-      .join(
-        "data_ruangan",
-        "data_laporan.id_ruangan",
-        "=",
-        "data_ruangan.id_ruangan",
-      )
-      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .select(
-        "data_laporan.*",
-        "data_pembimbing.*",
-        "data_ruangan.*",
-        "data_siswa.*",
-        "data_sekolah.nama_sekolah",
-      );
-    res.render("cetak_sertifikat", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_laporan,
-      halaman: "Cetak Sertifikat",
-      activePage: "cetak_sertifikat",
-    });
+  const data_laporan = await db("data_laporan")
+    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+    .join("data_nilai", "data_laporan.id_laporan", "=", "data_nilai.id_laporan")
+    .select("data_laporan.*", "data_siswa.*", "data_nilai.*");
+  res.render("cetak_sertifikat", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_laporan,
+    halaman: "Cetak Sertifikat",
+    activePage: "cetak_sertifikat",
+  });
   } else {
     req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
     res.redirect("/");
@@ -1452,39 +1474,47 @@ app.get("/cetak_sertifikat", async (req, res) => {
 });
 
 app.post("/cetak_sertifikat", async (req, res) => {
-  const {nama_siswa, nilai_magang} = req.body;
+  const { nama_siswa } = req.body;
   try {
-    // Load gambar sertifikat (template)
     const backgroundImage = await loadImage(
       "sertifikat/templete_sertifikat.png",
-    ); // Ganti dengan path gambar template Anda
-
-    // Buat canvas
+    );
     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
     const ctx = canvas.getContext("2d");
 
-    // Gambar template
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-    // Tambahkan teks atau informasi lainnya
-    ctx.font = '80px "Ephesis"'; // Ganti dengan font yang diinginkan
+    ctx.font = '90px "Ephesis"';
     ctx.fillStyle = "#2B5F9C";
 
-    // Tambahkan nama penerima
     const textWidth = ctx.measureText(nama_siswa).width;
-    const xPos = canvas.width / 2 - textWidth / 2; // Menghitung posisi X untuk teks di tengah
+    const xPos = canvas.width / 2 - textWidth / 2;
     const yPos = 750;
-    ctx.fillText(nama_siswa, xPos, yPos); // Ganti dengan posisi dan teks yang diinginkan
+    ctx.fillText(nama_siswa, xPos, yPos);
 
-    // Simpan sertifikat sebagai file
-    const outputFile = "sertifikat.png"; // Nama file output
+    const outputFile = `sertifikat-${nama_siswa}.png`;
     const out = fs.createWriteStream(outputFile);
     const stream = canvas.createPNGStream();
     stream.pipe(out);
 
-    // Kirim sertifikat sebagai respon
     out.on("finish", () => {
-      res.sendFile(path.join(__dirname, outputFile)); // Kirim file sebagai respon
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${outputFile}"`,
+      );
+      res.sendFile(path.join(__dirname, outputFile), (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Terjadi kesalahan saat mengirim file.");
+        } else {
+          // Hapus file setelah berhasil dikirim
+          fs.unlink(outputFile, (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+        }
+      });
     });
   } catch (error) {
     console.error(error);
