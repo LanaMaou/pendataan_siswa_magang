@@ -10,6 +10,7 @@
             data-toggle="modal"
             data-target="#modal_tambah"
           >
+          <i class="fas fa-plus-circle"></i>
             Tambah Data
           </button>
         </div>
@@ -22,9 +23,8 @@
                 <th>Nis</th>
                 <th>Nama</th>
                 <th>No Hp</th>
-                <th>Detail Laporan</th>
                 <th>Penilaian</th>
-                <th width="200px">Opsi</th>
+                <th width="260px">Opsi</th>
               </tr>
             </thead>
             <tbody>
@@ -34,15 +34,14 @@
                 <td><%= data.nis %></td>
                 <td><%= data.nama_siswa %></td>
                 <td><%= data.nohp_siswa %></td>
-                <td><%= data.isi_laporan%></td>
-                <td>
+                <td class="text-center">
                   <button
                     class="btn btn-<%= data.nilai ? 'info' : 'danger' %>"
                     type="button"
                     data-toggle="modal"
                     data-target="#modal_nilai<%= no %>"
                   >
-                    <%= data.nilai ? 'Sudah' : 'Belum' %>
+                    <%- data.nilai ? '<i class="fas fa-check-circle"></i> Sudah Dinilai' : '<i class="fas fa-times-circle"></i> Belum Dinilai' %>
                   </button>
                 </td>
                 <td>
@@ -52,14 +51,16 @@
                     data-toggle="modal"
                     data-target="#modal_detail<%= no %>"
                   >
+                  <i class="fas fa-info-circle"></i>
                     Detail
                   </button>
                   <button
-                    class="btn btn-warning"
+                    class="btn btn-warning text-white"
                     type="button"
                     data-toggle="modal"
                     data-target="#modal_ubah<%= no %>"
                   >
+                  <i class="fas fa-edit"></i>
                     Ubah
                   </button>
                   <form
@@ -87,6 +88,7 @@
                       type="submit"
                       id="button_hapus"
                     >
+                    <i class="fas fa-trash-alt"></i>
                       Hapus
                     </button>
                   </form>
@@ -387,17 +389,17 @@
                             />
                             <label for="isi_laporan">Laporan</label>
                             <div class="input-group">
-                              <input
+                              <textarea
                                 type="text"
-                                class="form-control"
+                                class="form-control overflow-y-scroll"
                                 id="laporan"
                                 name="laporan"
                                 readonly
-                                value="<%= data.laporan%>"
-                              />
+                              ><%= data.laporan%></textarea>
                               <a
                                 href="/download/<%= data.laporan %>"
                                 class="btn btn-info d-block"
+                                style="height: 40px;"
                                 >Unduh</a
                               >
                             </div>

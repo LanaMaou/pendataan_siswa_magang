@@ -10,6 +10,7 @@
             data-toggle="modal"
             data-target="#modal_tambah"
           >
+          <i class="fas fa-plus-circle"></i>
             Tambah Data
           </button>
         </div>
@@ -22,7 +23,7 @@
                 <th>Nama Pembimbing</th>
                 <th>No Hp</th>
                 <th>Email</th>
-                <th width="125px">Opsi</th>
+                <th width="170px">Opsi</th>
               </tr>
             </thead>
             <tbody>
@@ -34,11 +35,12 @@
                 <td><%= data.email_pembimbing %></td>
                 <td>
                   <button
-                    class="btn btn-warning"
+                    class="btn btn-warning text-white"
                     type="button"
                     data-toggle="modal"
                     data-target="#modal_ubah<%= no %>"
                   >
+                  <i class="fas fa-edit"></i>
                     Ubah
                   </button>
                   <form
@@ -61,6 +63,7 @@
                       type="submit"
                       id="button_hapus"
                     >
+                    <i class="fas fa-trash-alt"></i>
                       Hapus
                     </button>
                   </form>

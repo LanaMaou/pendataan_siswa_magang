@@ -157,11 +157,11 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">
-          <%= btnType !== '' ? 'Simpan' : 'Ubah' %>
+        <button type="submit" class="btn btn-<%= btnType !== '' ? 'primary' : 'warning text-white' %>">
+          <%- btnType !== '' ? '<i class="fas fa-save"></i> Simpan' : '<i class="fas fa-edit"></i> Ubah' %>
         </button>
         <button type="reset" class="btn btn-secondary">
-          <%= btnType !== '' ? 'Bersihkan' : 'Atur Ulang' %>
+          <%- btnType !== '' ? '<i class="fas fa-eraser"></i> Bersihkan' : '<i class="fas fa-spinner"></i> Atur Ulang' %>
         </button>
       </form>
     </div>
