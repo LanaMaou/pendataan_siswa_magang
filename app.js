@@ -936,69 +936,69 @@ app.delete("/siswa", async (req, res) => {
 // Halaman Laporan
 app.get("/laporan", async (req, res) => {
   if (req.session.login) {
-  const data_laporan = await db("data_laporan")
-    .join(
-      "data_pembimbing",
-      "data_laporan.id_pembimbing",
-      "=",
-      "data_pembimbing.id_pembimbing",
-    )
-    .join(
-      "data_ruangan",
-      "data_laporan.id_ruangan",
-      "=",
-      "data_ruangan.id_ruangan",
-    )
-    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-    .join(
-      "data_sekolah",
-      "data_siswa.id_sekolah",
-      "=",
-      "data_sekolah.id_sekolah",
-    )
-    .leftJoin(
-      "data_nilai",
-      "data_laporan.id_laporan",
-      "=",
-      "data_nilai.id_laporan",
-    )
-    .select(
-      "data_laporan.*",
-      "data_pembimbing.*",
-      "data_ruangan.*",
-      "data_siswa.*",
-      "data_sekolah.nama_sekolah",
-      "data_nilai.id_nilai",
-      "data_nilai.nilai",
-      "data_nilai.grade",
-    );
-  const data_siswa = await db("data_siswa")
-    .join(
-      "data_sekolah",
-      "data_siswa.id_sekolah",
-      "=",
-      "data_sekolah.id_sekolah",
-    )
-    .where({
-      status_laporan: "Belum Laporan",
+    const data_laporan = await db("data_laporan")
+      .join(
+        "data_pembimbing",
+        "data_laporan.id_pembimbing",
+        "=",
+        "data_pembimbing.id_pembimbing",
+      )
+      .join(
+        "data_ruangan",
+        "data_laporan.id_ruangan",
+        "=",
+        "data_ruangan.id_ruangan",
+      )
+      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+      .join(
+        "data_sekolah",
+        "data_siswa.id_sekolah",
+        "=",
+        "data_sekolah.id_sekolah",
+      )
+      .leftJoin(
+        "data_nilai",
+        "data_laporan.id_laporan",
+        "=",
+        "data_nilai.id_laporan",
+      )
+      .select(
+        "data_laporan.*",
+        "data_pembimbing.*",
+        "data_ruangan.*",
+        "data_siswa.*",
+        "data_sekolah.nama_sekolah",
+        "data_nilai.id_nilai",
+        "data_nilai.nilai",
+        "data_nilai.grade",
+      );
+    const data_siswa = await db("data_siswa")
+      .join(
+        "data_sekolah",
+        "data_siswa.id_sekolah",
+        "=",
+        "data_sekolah.id_sekolah",
+      )
+      .where({
+        status_laporan: "Belum Laporan",
+      });
+    const data_pembimbing = await db("data_pembimbing");
+    const data_ruangan = await db("data_ruangan");
+    res.render("data_laporan", {
+      layout: "layouts/layout-admin",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_laporan,
+      data_siswa,
+      data_pembimbing,
+      data_ruangan,
+      halaman: "Menu Laporan",
+      activePage: "laporan",
     });
-  const data_pembimbing = await db("data_pembimbing");
-  const data_ruangan = await db("data_ruangan");
-  res.render("data_laporan", {
-    layout: "layouts/layout-admin",
-    berhasil: req.flash("berhasil"),
-    gagal: req.flash("gagal"),
-    id_login: req.session.id_login,
-    email: req.session.email,
-    password: req.session.password,
-    nama: req.session.nama,
-    data_laporan,
-    data_siswa,
-    data_pembimbing,
-    data_ruangan,
-    halaman: "Menu Laporan",
-    activePage: "laporan",
-  });
   } else {
     req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
     res.redirect("/");
@@ -1451,71 +1451,120 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
 // Cetak Sertifikat
 app.get("/cetak_sertifikat", async (req, res) => {
   if (req.session.login) {
-  const data_laporan = await db("data_laporan")
-    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-    .join("data_nilai", "data_laporan.id_laporan", "=", "data_nilai.id_laporan")
-    .select("data_laporan.*", "data_siswa.*", "data_nilai.*");
-  res.render("cetak_sertifikat", {
-    layout: "layouts/layout-admin",
-    berhasil: req.flash("berhasil"),
-    gagal: req.flash("gagal"),
-    id_login: req.session.id_login,
-    email: req.session.email,
-    password: req.session.password,
-    nama: req.session.nama,
-    data_laporan,
-    halaman: "Cetak Sertifikat",
-    activePage: "cetak_sertifikat",
-  });
+    const data_laporan = await db("data_laporan")
+      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+      .join(
+        "data_nilai",
+        "data_laporan.id_laporan",
+        "=",
+        "data_nilai.id_laporan",
+      )
+      .select("data_laporan.*", "data_siswa.*", "data_nilai.*");
+    res.render("cetak_sertifikat", {
+      layout: "layouts/layout-admin",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_laporan,
+      halaman: "Cetak Sertifikat",
+      activePage: "cetak_sertifikat",
+    });
   } else {
     req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
     res.redirect("/");
   }
 });
 
+// app.post("/cetak_sertifikat", async (req, res) => {
+//   const { nama_siswa } = req.body;
+//   try {
+//     const backgroundImage = await loadImage(
+//       "sertifikat/templete_sertifikat.png",
+//     );
+//     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
+//     const ctx = canvas.getContext("2d");
+
+//     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+//     ctx.font = '90px "Ephesis"';
+//     ctx.fillStyle = "#2B5F9C";
+
+//     const textWidth = ctx.measureText(nama_siswa).width;
+//     const xPos = canvas.width / 2 - textWidth / 2;
+//     const yPos = 750;
+//     ctx.fillText(nama_siswa, xPos, yPos);
+
+//     const outputFile = `sertifikat-${nama_siswa}.png`;
+//     const out = fs.createWriteStream(outputFile);
+//     const stream = canvas.createPNGStream();
+//     stream.pipe(out);
+
+//     out.on("finish", () => {
+//       res.setHeader(
+//         "Content-Disposition",
+//         `attachment; filename="${outputFile}"`,
+//       );
+//       res.sendFile(path.join(__dirname, outputFile), (err) => {
+//         if (err) {
+//           console.error(err);
+//           res.status(500).send("Terjadi kesalahan saat mengirim file.");
+//         } else {
+//           // Hapus file setelah berhasil dikirim
+//           fs.unlink(outputFile, (err) => {
+//             if (err) {
+//               console.error(err);
+//             }
+//           });
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
+//   }
+// });
+
 app.post("/cetak_sertifikat", async (req, res) => {
   const { nama_siswa } = req.body;
   try {
-    const backgroundImage = await loadImage(
-      "sertifikat/templete_sertifikat.png",
-    );
-    const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
-    const ctx = canvas.getContext("2d");
+    const doc = new PDFDocument({ size: [2000, 1414] });
 
-    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    doc.image("sertifikat/templete_sertifikat.png", 0, 0, {
+      width: 2000,
+      height: 1414,
+    });
 
-    ctx.font = '90px "Ephesis"';
-    ctx.fillStyle = "#2B5F9C";
+    const verticalOffset = 0; // Atur offset vertikal
+    const textY = doc.page.height / 2 + verticalOffset; // Menyesuaikan posisi vertikal
 
-    const textWidth = ctx.measureText(nama_siswa).width;
-    const xPos = canvas.width / 2 - textWidth / 2;
-    const yPos = 750;
-    ctx.fillText(nama_siswa, xPos, yPos);
+    doc
+      .font("font/Ephesis-Regular.ttf")
+      .fontSize(90)
+      .fillColor("#2B5F9C")
+      .text(nama_siswa, 0, textY , { align: "center" });
 
-    const outputFile = `sertifikat-${nama_siswa}.png`;
-    const out = fs.createWriteStream(outputFile);
-    const stream = canvas.createPNGStream();
-    stream.pipe(out);
+    const outputFile = `sertifikat-${nama_siswa}.pdf`;
+    const outputFilePath = path.join(__dirname, outputFile);
 
-    out.on("finish", () => {
+    const stream = doc.pipe(fs.createWriteStream(outputFilePath));
+
+    // Event 'finish' di sini menunggu hingga proses penulisan selesai
+    stream.on("finish", () => {
+      // Set header dan kirim file ke client
       res.setHeader(
         "Content-Disposition",
         `attachment; filename="${outputFile}"`,
       );
-      res.sendFile(path.join(__dirname, outputFile), (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Terjadi kesalahan saat mengirim file.");
-        } else {
-          // Hapus file setelah berhasil dikirim
-          fs.unlink(outputFile, (err) => {
-            if (err) {
-              console.error(err);
-            }
-          });
-        }
-      });
+      res.setHeader("Content-Type", "application/pdf");
+
+      const fileStream = fs.createReadStream(outputFilePath);
+      fileStream.pipe(res);
     });
+
+    doc.end(); // Akhiri proses pembuatan PDF
   } catch (error) {
     console.error(error);
     res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
