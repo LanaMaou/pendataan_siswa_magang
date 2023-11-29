@@ -1532,7 +1532,7 @@ app.post("/cetak_sertifikat", async (req, res) => {
   try {
     const doc = new PDFDocument({ size: [2000, 1414] });
 
-    doc.image("sertifikat/templete_sertifikat.png", 0, 0, {
+    doc.image("sertifikat/templete_sertifikat_contoh.png", 0, 0, {
       width: 2000,
       height: 1414,
     });
@@ -1547,7 +1547,7 @@ app.post("/cetak_sertifikat", async (req, res) => {
       .text(nama_siswa, 0, textY , { align: "center" });
 
     const outputFile = `sertifikat-${nama_siswa}.pdf`;
-    const outputFilePath = path.join(__dirname, outputFile);
+    const outputFilePath = path.join(__dirname, 'sertifikat', 'hasil_sertifikat', outputFile);
 
     const stream = doc.pipe(fs.createWriteStream(outputFilePath));
 
