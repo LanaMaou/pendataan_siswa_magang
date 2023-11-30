@@ -8,9 +8,7 @@ const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const multer = require("multer");
 const path = require("path");
-const { createCanvas, loadImage } = require("canvas");
 const PDFDocument = require("pdfkit");
-const PNG = require("png-js");
 
 // Koneksi database
 require("dotenv").config();
@@ -1477,55 +1475,6 @@ app.get("/cetak_sertifikat", async (req, res) => {
     res.redirect("/");
   }
 });
-
-// app.post("/cetak_sertifikat", async (req, res) => {
-//   const { nama_siswa } = req.body;
-//   try {
-//     const backgroundImage = await loadImage(
-//       "sertifikat/templete_sertifikat.png",
-//     );
-//     const canvas = createCanvas(backgroundImage.width, backgroundImage.height);
-//     const ctx = canvas.getContext("2d");
-
-//     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-
-//     ctx.font = '90px "Ephesis"';
-//     ctx.fillStyle = "#2B5F9C";
-
-//     const textWidth = ctx.measureText(nama_siswa).width;
-//     const xPos = canvas.width / 2 - textWidth / 2;
-//     const yPos = 750;
-//     ctx.fillText(nama_siswa, xPos, yPos);
-
-//     const outputFile = `sertifikat-${nama_siswa}.png`;
-//     const out = fs.createWriteStream(outputFile);
-//     const stream = canvas.createPNGStream();
-//     stream.pipe(out);
-
-//     out.on("finish", () => {
-//       res.setHeader(
-//         "Content-Disposition",
-//         `attachment; filename="${outputFile}"`,
-//       );
-//       res.sendFile(path.join(__dirname, outputFile), (err) => {
-//         if (err) {
-//           console.error(err);
-//           res.status(500).send("Terjadi kesalahan saat mengirim file.");
-//         } else {
-//           // Hapus file setelah berhasil dikirim
-//           fs.unlink(outputFile, (err) => {
-//             if (err) {
-//               console.error(err);
-//             }
-//           });
-//         }
-//       });
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
-//   }
-// });
 
 app.post("/cetak_sertifikat", async (req, res) => {
   const { nama_siswa } = req.body;
