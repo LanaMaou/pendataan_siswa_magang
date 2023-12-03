@@ -39,16 +39,6 @@ window.onload = () => {
 };
 // Akhir fungsi ketikkan
 
-// Close Onclick
-// window.addEventListener("click", (pencet) => {
-//   let target = pencet.target;
-//   if (!target.classList.contains("alert-manual")) {
-//     alert.forEach((a) => {
-//       a.classList.add("hidden");
-//     });
-//   }
-// });
-
 window.addEventListener("click", (pencet) => {
   // Mengecek apakah elemen yang diklik memiliki class "terkecuali" atau berada di dalamnya
   const alert = document.querySelectorAll(".alert-manual");
@@ -76,8 +66,20 @@ window.addEventListener("click", (pencet) => {
     alert.forEach((a) => {
       a.classList.add("hidden");
     });
-    page_masuk.classList.add("translate-x-[100vw]");
-    page_daftar.classList.add("translate-x-[100vw]");
+    if (!page_masuk.classList.contains("translate-x-[100vw]")) {
+      page_masuk.classList.add("translate-x-[100vw]");
+      setTimeout(() => {
+        page_masuk.classList.remove("flex");
+        page_masuk.classList.add("hidden");
+      }, 100);
+    }
+    if (!page_daftar.classList.contains("translate-x-[100vw]")) {
+      page_daftar.classList.add("translate-x-[100vw]");
+      setTimeout(() => {
+        page_daftar.classList.remove("flex");
+        page_daftar.classList.add("hidden");
+      }, 100);
+    }
 
     if (ilustrasi.classList.contains("opacity-0")) {
       ilustrasi.classList.remove("opacity-0");
@@ -106,13 +108,23 @@ let opsiDaftar = "tidak aktif";
 tombol_daftar.forEach((tbl_daftar) => {
   tbl_daftar.addEventListener("click", () => {
     if (opsiDaftar === "tidak aktif" && opsiMasuk === "tidak aktif") {
-      page_daftar.classList.remove("translate-x-[100vw]");
-      ilustrasi.classList.toggle("opacity-0");
+      page_daftar.classList.remove("hidden");
+      page_daftar.classList.add("flex");
+      setTimeout(() => {
+        page_daftar.classList.remove("translate-x-[100vw]");
+        ilustrasi.classList.toggle("opacity-0");
+      }, 100);
 
       opsiDaftar = "aktif";
     } else if (opsiDaftar === "tidak aktif" && opsiMasuk === "aktif") {
       page_masuk.classList.add("translate-x-[100vw]");
-      page_daftar.classList.remove("translate-x-[100vw]");
+      page_daftar.classList.remove("hidden");
+      page_daftar.classList.add("flex");
+      setTimeout(() => {
+        page_masuk.classList.remove("flex");
+        page_masuk.classList.add("hidden");
+        page_daftar.classList.remove("translate-x-[100vw]");
+      }, 100);
 
       opsiDaftar = "aktif";
       opsiMasuk = "tidak aktif";
@@ -123,13 +135,23 @@ tombol_daftar.forEach((tbl_daftar) => {
 tombol_masuk.forEach((tbl_masuk) => {
   tbl_masuk.addEventListener("click", () => {
     if (opsiMasuk === "tidak aktif" && opsiDaftar === "tidak aktif") {
-      page_masuk.classList.remove("translate-x-[100vw]");
-      ilustrasi.classList.toggle("opacity-0");
+      page_masuk.classList.remove("hidden");
+      page_masuk.classList.add("flex");
+      setTimeout(() => {
+        page_masuk.classList.remove("translate-x-[100vw]");
+        ilustrasi.classList.toggle("opacity-0");
+      }, 100);
 
       opsiMasuk = "aktif";
     } else if (opsiMasuk === "tidak aktif" && opsiDaftar === "aktif") {
       page_daftar.classList.add("translate-x-[100vw]");
-      page_masuk.classList.remove("translate-x-[100vw]");
+      page_masuk.classList.remove("hidden");
+      page_masuk.classList.add("flex");
+      setTimeout(() => {
+        page_daftar.classList.remove("flex");
+        page_daftar.classList.add("hidden");
+        page_masuk.classList.remove("translate-x-[100vw]");
+      }, 100);
 
       opsiMasuk = "aktif";
       opsiDaftar = "tidak aktif";
@@ -139,12 +161,20 @@ tombol_masuk.forEach((tbl_masuk) => {
 
 prev_daftar.addEventListener("click", () => {
   page_daftar.classList.add("translate-x-[100vw]");
+  setTimeout(() => {
+    page_daftar.classList.add("hidden");
+    page_daftar.classList.remove("flex");
+  }, 100);
   ilustrasi.classList.toggle("opacity-0");
 
   opsiDaftar = "tidak aktif";
 });
 prev_masuk.addEventListener("click", () => {
   page_masuk.classList.add("translate-x-[100vw]");
+  setTimeout(() => {
+    page_masuk.classList.add("hidden");
+    page_masuk.classList.remove("flex");
+  }, 100);
   ilustrasi.classList.toggle("opacity-0");
 
   opsiMasuk = "tidak aktif";
