@@ -232,7 +232,7 @@
                                 placeholder="Masukan Tanggal Lahir"
                                 name="tanggal_lahir"
                                 required
-                                value="<%= data.tanggal_lahir.toISOString().slice(0, 10) %>"
+                                value="<%= new Date(data.tanggal_lahir).toLocaleDateString('en-CA') %>"
                               />
                               <label for="status_laporan">Status Laporan</label>
                               <select
@@ -376,7 +376,7 @@
                               id="tanggal_lahir"
                               name="tanggal_lahir"
                               readonly
-                              value="<%= data.tanggal_lahir.toISOString().slice(0, 10) %>"
+                              value="<%= new Date(data.tanggal_lahir).toLocaleDateString('en-CA') %>"
                             />
                             <label for="status_laporan">Status Laporan</label>
                             <input

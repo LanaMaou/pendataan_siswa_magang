@@ -131,7 +131,7 @@
                 placeholder="Masukan Tanggal Lahir"
                 name="tanggal_lahir"
                 required
-                value="<%= data_siswa === '' ? '' : data_siswa.tanggal_lahir.toISOString().slice(0, 10)%>"
+                value="<%= data_siswa === '' ? '' : new Date(data_siswa.tanggal_lahir).toLocaleDateString('en-CA') %>"
               />
             </div>
           </div>

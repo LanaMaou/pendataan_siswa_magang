@@ -199,6 +199,20 @@
                                 readonly
                                 value="<%= data.nama_sekolah %>"
                               />
+                              <label for="nama_sekolah">Tanggal Laporan</label>
+                              <input
+                                type="date"
+                                class="form-control nama_sekolah_edit"
+                                id="nama_sekolah_edit"
+                                placeholder="Masukan Asal Sekolah"
+                                name="tgl_laporan"
+                                required
+                                value="<%= new Date(data.tgl_laporan).toLocaleDateString('en-CA') %>"
+                              />
+                            </div>
+                          </div>
+                          <div class="form-kanan col-6">
+                            <div class="form-group">
                               <label for="id_pembimbing">Nama Pembimbing</label>
                               <select
                                 name="id_pembimbing"
@@ -215,10 +229,6 @@
                                 </option>
                                 <% }) %>
                               </select>
-                            </div>
-                          </div>
-                          <div class="form-kanan col-6">
-                            <div class="form-group">
                               <label for="id_ruangan">Nama Ruangan</label>
                               <select
                                 name="id_ruangan"
@@ -356,6 +366,27 @@
                               readonly
                               value="<%= data.nama_sekolah %>"
                             />
+                            <%
+                              let tanggal = new Date(data.tgl_laporan);
+
+                              let namaBulan = [
+                                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                              ];
+
+                              let tanggalFormatted = tanggal.getDate();
+                              let bulanFormatted = namaBulan[tanggal.getMonth()];
+                              let tahunFormatted = tanggal.getFullYear();
+                              %>                            
+                            <label for="tgl_laporan">Tanggal Laporan</label>
+                            <input
+                              type="text"
+                              class="form-control tgl_laporan"
+                              id="tgl_laporan"
+                              name="tgl_laporan"
+                              readonly
+                              value="<%= tanggalFormatted %>-<%= bulanFormatted %>-<%= tahunFormatted %>"
+                            />
                           </div>
                         </div>
                         <div class="form-kanan col-6">
@@ -391,9 +422,10 @@
                             <div class="input-group">
                               <textarea
                                 type="text"
-                                class="form-control overflow-y-scroll"
+                                class="form-control overflow-y-scroll mr-1"
                                 id="laporan"
                                 name="laporan"
+                                rows="4"
                                 readonly
                               ><%= data.laporan%></textarea>
                               <a
@@ -626,6 +658,19 @@
                           name="nama_sekolah"
                           readonly
                         />
+                        <label for="tgl_laporan">Tanggal Laporan</label>
+                        <input
+                          type="date"
+                          class="form-control tgl_laporan"
+                          id="tgl_laporan"
+                          name="tgl_laporan"
+                          readonly
+                          value="<%= new Date().toLocaleDateString('en-CA') %>"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-kanan col-6">
+                      <div class="form-group">
                         <label for="id_pembimbing">Nama Pembimbing</label>
                         <select
                           name="id_pembimbing"
@@ -640,10 +685,6 @@
                           </option>
                           <% }) %>
                         </select>
-                      </div>
-                    </div>
-                    <div class="form-kanan col-6">
-                      <div class="form-group">
                         <label for="id_ruangan">Nama Ruangan</label>
                         <select
                           name="id_ruangan"
