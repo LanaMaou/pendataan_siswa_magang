@@ -1004,12 +1004,20 @@ app.get("/laporan", async (req, res) => {
 });
 
 app.post("/laporan", upload.single("filename"), async (req, res) => {
-  const { isi_laporan, id_pembimbing, id_ruangan, id_siswa, id_login, nis } =
-    req.body;
+  const {
+    isi_laporan,
+    tgl_laporan,
+    id_pembimbing,
+    id_ruangan,
+    id_siswa,
+    id_login,
+    nis,
+  } = req.body;
   const { filename } = req.file;
   try {
     await db("data_laporan").insert({
       isi_laporan,
+      tgl_laporan,
       laporan: filename,
       id_pembimbing,
       id_ruangan,
@@ -1038,6 +1046,7 @@ app.put("/laporan", upload.single("filename"), async (req, res) => {
   const {
     id_laporan,
     isi_laporan,
+    tgl_laporan,
     id_pembimbing,
     id_ruangan,
     id_siswa,
@@ -1046,6 +1055,7 @@ app.put("/laporan", upload.single("filename"), async (req, res) => {
   try {
     await db("data_laporan").where({ id_laporan }).update({
       isi_laporan,
+      tgl_laporan,
       laporan: filename,
       id_pembimbing,
       id_ruangan,
@@ -1388,12 +1398,20 @@ app.get("/laporan_user", async (req, res) => {
 });
 
 app.post("/laporan_user", upload.single("filename"), async (req, res) => {
-  const { isi_laporan, id_pembimbing, id_ruangan, id_siswa, id_login, nis } =
-    req.body;
+  const {
+    isi_laporan,
+    tgl_laporan,
+    id_pembimbing,
+    id_ruangan,
+    id_siswa,
+    id_login,
+    nis,
+  } = req.body;
   const { filename } = req.file;
   try {
     await db("data_laporan").insert({
       isi_laporan,
+      tgl_laporan,
       laporan: filename,
       id_pembimbing,
       id_ruangan,
@@ -1422,6 +1440,7 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
   const {
     id_laporan,
     isi_laporan,
+    tgl_laporan,
     id_pembimbing,
     id_ruangan,
     id_siswa,
@@ -1430,6 +1449,7 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
   try {
     await db("data_laporan").where({ id_laporan }).update({
       isi_laporan,
+      tgl_laporan,
       laporan: filename,
       id_pembimbing,
       id_ruangan,

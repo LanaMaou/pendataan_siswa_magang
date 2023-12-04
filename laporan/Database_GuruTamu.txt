@@ -1,0 +1,16 @@
+1. Membuat Database : Create database <namadatabase>
+2. Memilih Database : use <namadatabase>
+3. Membuat Tabel    : Create table <namatable> (namakolom tipedata, namakolom tipedata);
+4. Menampilkan Tabel : Show tables;
+5. Menampilkan Struktur Table : desc / describe <namatable>
+6. Menambahkan Data ke Tabel : insert into <namatabel> values (nilai, nilai, nilai)
+7. Menampilkan Tabel : Select * from <namatable> / Select namakolom, namakolom from <namatable>
+8. Mengubah Data : Update <namatable> set namakolom=nilai where namakolom=nilai
+9. Menghapus Data: Delete from <namatable>
+10. Menampilkan Data dengan syarat : Select * from <namatable> where namakolom=nilai
+11. Menampilkan Data Dengan Like :
+		-Huruf Depan         : Select * from <namatable> where namakolom like 'A%'
+		-Huruf Belakang      : Select * from <namatable> where namakolom like '%A'
+		-Yang Terdapat Huruf : Select * from <namatable> where namakolom like '%A%'
+12. Mengurutkan Data : select * from order by namakolom asc (A - Z)
+		       select * from order by namakolom desc (Z - A)
