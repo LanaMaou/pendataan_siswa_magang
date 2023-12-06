@@ -1,0 +1,27 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title text-lg">Silahkan Unduh Sertifikat</h3>
+      <form action="/cetak_sertifikat" method="post">
+        <input type="hidden" name="id_laporan" value="<%= data_nilai.id_laporan %>" />
+        <input type="hidden" name="nama_siswa" value="<%= data_nilai.nama_siswa%>" />
+        <button class="btn btn-outline-info float-right" type="submit">
+          <i class="nav-icon fas fa-download"></i>
+          Unduh Sertifikat
+        </button>
+      </form>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-center">
+        <% if (sertifikat) { %>
+          <img
+            src="<%= sertifikat %>"
+            alt="Sertifikat"
+            height="350"
+            width="540"
+          />
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

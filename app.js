@@ -9,6 +9,7 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const { createCanvas, loadImage, registerFont } = require("canvas");
 
 // Koneksi database
 require("dotenv").config();
@@ -38,6 +39,16 @@ app.use(
 );
 app.use(flash());
 
+const validasiMasuk = (status, route, req, res) => {
+  if (status  !== route) {
+    req.flash("masuk_dulu", "Ada masalah silahkah masuk ulang!");
+    res.redirect("/");
+    return false;
+  }else{
+    return true;
+  }
+};
+
 // Konfigurasi Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -58,7 +69,12 @@ app.get("/download/:filename", (req, res) => {
 
 // Halaman Home
 app.get("/", (req, res) => {
-  req.session.id_login = " ";
+  req.session.id_login = "";
+  req.session.email = "";
+  req.session.password = "";
+  req.session.nama = "";
+  req.session.no_hp = "";
+  req.session.status = "";
   req.session.login = false;
   res.render("index", {
     layout: false,
@@ -163,6 +179,14 @@ app.get("/keluar", (req, res) => {
   res.redirect("/");
 });
 
+app.use((req, res, next) => {
+  if (!req.session || !req.session.login) {
+    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
+    return res.redirect("/");
+  }
+  next();
+});
+
 app.put(
   "/ubah-akun",
   [
@@ -210,32 +234,28 @@ app.put(
 //
 // Halaman Admin
 app.get("/admin", async (req, res) => {
-  if (req.session.login) {
-    const data_akun = await db("tb_login").select("*");
-    const pembimbing = await db("data_pembimbing").count("* as total").first();
-    const ruangan = await db("data_ruangan").count("* as total").first();
-    const sekolah = await db("data_sekolah").count("* as total").first();
-    const siswa = await db("data_siswa").count("* as total").first();
-    res.render("dashboard_admin", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      total_pembimbing: pembimbing.total,
-      total_ruangan: ruangan.total,
-      total_sekolah: sekolah.total,
-      total_siswa: siswa.total,
-      data_akun,
-      halaman: "Dashboard",
-      activePage: "admin",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_akun = await db("tb_login").select("*");
+  const pembimbing = await db("data_pembimbing").count("* as total").first();
+  const ruangan = await db("data_ruangan").count("* as total").first();
+  const sekolah = await db("data_sekolah").count("* as total").first();
+  const siswa = await db("data_siswa").count("* as total").first();
+  res.render("dashboard_admin", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    total_pembimbing: pembimbing.total,
+    total_ruangan: ruangan.total,
+    total_sekolah: sekolah.total,
+    total_siswa: siswa.total,
+    data_akun,
+    halaman: "Dashboard",
+    activePage: "admin",
+  });
 });
 
 app.post(
@@ -341,64 +361,57 @@ app.delete("/akun", async (req, res) => {
 //
 // Halaman User
 app.get("/user", async (req, res) => {
-  if (req.session.login) {
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .join("tb_login", "data_siswa.id_login", "=", "tb_login.id_login")
-      .select("*");
-    const pembimbing = await db("data_pembimbing").count("* as total").first();
-    const ruangan = await db("data_ruangan").count("* as total").first();
-    const sekolah = await db("data_sekolah").count("* as total").first();
-    const siswa = await db("data_siswa").count("* as total").first();
-    res.render("dashboard_user", {
-      layout: "layouts/layout-user",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      total_pembimbing: pembimbing.total,
-      total_ruangan: ruangan.total,
-      total_sekolah: sekolah.total,
-      total_siswa: siswa.total,
-      data_siswa,
-      halaman: "Dashboard",
-      activePage: "user",
-      blocked: "",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "user", req, res)) return;
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .join("tb_login", "data_siswa.id_login", "=", "tb_login.id_login")
+    .select("*");
+  const pembimbing = await db("data_pembimbing").count("* as total").first();
+  const ruangan = await db("data_ruangan").count("* as total").first();
+  const sekolah = await db("data_sekolah").count("* as total").first();
+  const siswa = await db("data_siswa").count("* as total").first();
+  res.render("dashboard_user", {
+    layout: "layouts/layout-user",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    total_pembimbing: pembimbing.total,
+    total_ruangan: ruangan.total,
+    total_sekolah: sekolah.total,
+    total_siswa: siswa.total,
+    data_siswa,
+    halaman: "Dashboard",
+    activePage: "user",
+    blocked: "",
+    blocked_sertifikat: "",
+  });
 });
 
 //
 // Halaman Pembimbing
 app.get("/pembimbing", async (req, res) => {
-  if (req.session.login) {
-    const data_pembimbing = await db("data_pembimbing").select("*");
-    res.render("data_pembimbing", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_pembimbing,
-      halaman: "Menu Pembimbing",
-      activePage: "pembimbing",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_pembimbing = await db("data_pembimbing").select("*");
+  res.render("data_pembimbing", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_pembimbing,
+    halaman: "Menu Pembimbing",
+    activePage: "pembimbing",
+  });
 });
 
 app.post(
@@ -505,24 +518,20 @@ app.delete("/pembimbing", async (req, res) => {
 //
 // Halaman Ruangan
 app.get("/ruangan", async (req, res) => {
-  if (req.session.login) {
-    const data_ruangan = await db("data_ruangan").select("*");
-    res.render("data_ruangan", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_ruangan,
-      halaman: "Menu Ruangan",
-      activePage: "ruangan",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_ruangan = await db("data_ruangan").select("*");
+  res.render("data_ruangan", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_ruangan,
+    halaman: "Menu Ruangan",
+    activePage: "ruangan",
+  });
 });
 
 app.post(
@@ -617,24 +626,20 @@ app.delete("/ruangan", async (req, res) => {
 //
 // Halaman Sekolah
 app.get("/sekolah", async (req, res) => {
-  if (req.session.login) {
-    const data_sekolah = await db("data_sekolah").select("*");
-    res.render("data_sekolah", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_sekolah,
-      halaman: "Menu Sekolah",
-      activePage: "sekolah",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_sekolah = await db("data_sekolah").select("*");
+  res.render("data_sekolah", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_sekolah,
+    halaman: "Menu Sekolah",
+    activePage: "sekolah",
+  });
 });
 
 app.post(
@@ -763,41 +768,37 @@ app.delete("/sekolah", async (req, res) => {
 
 // Halaman Siswa
 app.get("/siswa", async (req, res) => {
-  if (req.session.login) {
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .join("tb_login", "data_siswa.id_login", "=", "tb_login.id_login")
-      .select("data_siswa.*", "data_sekolah.nama_sekolah", "tb_login.*");
-    const data_sekolah = await db("data_sekolah");
-    const data_akun = await db("tb_login")
-      .leftJoin("data_siswa", "tb_login.id_login", "data_siswa.id_login")
-      .whereNull("data_siswa.id_login")
-      .where({ status: "user" })
-      .select("tb_login.*");
-    res.render("data_siswa", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      no_hp: req.session.no_hp,
-      data_siswa,
-      data_sekolah,
-      data_akun,
-      halaman: "Menu Siswa",
-      activePage: "siswa",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .join("tb_login", "data_siswa.id_login", "=", "tb_login.id_login")
+    .select("data_siswa.*", "data_sekolah.nama_sekolah", "tb_login.*");
+  const data_sekolah = await db("data_sekolah");
+  const data_akun = await db("tb_login")
+    .leftJoin("data_siswa", "tb_login.id_login", "data_siswa.id_login")
+    .whereNull("data_siswa.id_login")
+    .where({ status: "user" })
+    .select("tb_login.*");
+  res.render("data_siswa", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    no_hp: req.session.no_hp,
+    data_siswa,
+    data_sekolah,
+    data_akun,
+    halaman: "Menu Siswa",
+    activePage: "siswa",
+  });
 });
 
 app.post(
@@ -933,74 +934,70 @@ app.delete("/siswa", async (req, res) => {
 
 // Halaman Laporan
 app.get("/laporan", async (req, res) => {
-  if (req.session.login) {
-    const data_laporan = await db("data_laporan")
-      .join(
-        "data_pembimbing",
-        "data_laporan.id_pembimbing",
-        "=",
-        "data_pembimbing.id_pembimbing",
-      )
-      .join(
-        "data_ruangan",
-        "data_laporan.id_ruangan",
-        "=",
-        "data_ruangan.id_ruangan",
-      )
-      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .leftJoin(
-        "data_nilai",
-        "data_laporan.id_laporan",
-        "=",
-        "data_nilai.id_laporan",
-      )
-      .select(
-        "data_laporan.*",
-        "data_pembimbing.*",
-        "data_ruangan.*",
-        "data_siswa.*",
-        "data_sekolah.nama_sekolah",
-        "data_nilai.id_nilai",
-        "data_nilai.nilai",
-        "data_nilai.grade",
-      );
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .where({
-        status_laporan: "Belum Laporan",
-      });
-    const data_pembimbing = await db("data_pembimbing");
-    const data_ruangan = await db("data_ruangan");
-    res.render("data_laporan", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_laporan,
-      data_siswa,
-      data_pembimbing,
-      data_ruangan,
-      halaman: "Menu Laporan",
-      activePage: "laporan",
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_laporan = await db("data_laporan")
+    .join(
+      "data_pembimbing",
+      "data_laporan.id_pembimbing",
+      "=",
+      "data_pembimbing.id_pembimbing",
+    )
+    .join(
+      "data_ruangan",
+      "data_laporan.id_ruangan",
+      "=",
+      "data_ruangan.id_ruangan",
+    )
+    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .leftJoin(
+      "data_nilai",
+      "data_laporan.id_laporan",
+      "=",
+      "data_nilai.id_laporan",
+    )
+    .select(
+      "data_laporan.*",
+      "data_pembimbing.*",
+      "data_ruangan.*",
+      "data_siswa.*",
+      "data_sekolah.nama_sekolah",
+      "data_nilai.id_nilai",
+      "data_nilai.nilai",
+      "data_nilai.grade",
+    );
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .where({
+      status_laporan: "Belum Laporan",
     });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  const data_pembimbing = await db("data_pembimbing");
+  const data_ruangan = await db("data_ruangan");
+  res.render("data_laporan", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_laporan,
+    data_siswa,
+    data_pembimbing,
+    data_ruangan,
+    halaman: "Menu Laporan",
+    activePage: "laporan",
+  });
 });
 
 app.post("/laporan", upload.single("filename"), async (req, res) => {
@@ -1038,11 +1035,6 @@ app.post("/laporan", upload.single("filename"), async (req, res) => {
 
 app.put("/laporan", upload.single("filename"), async (req, res) => {
   let filename;
-  if (!req.file) {
-    filename = req.body.oldLaporan;
-  } else {
-    filename = req.file.filename;
-  }
   const {
     id_laporan,
     isi_laporan,
@@ -1052,22 +1044,43 @@ app.put("/laporan", upload.single("filename"), async (req, res) => {
     id_siswa,
     id_login,
   } = req.body;
-  try {
-    await db("data_laporan").where({ id_laporan }).update({
-      isi_laporan,
-      tgl_laporan,
-      laporan: filename,
-      id_pembimbing,
-      id_ruangan,
-      id_siswa,
-      id_login,
-    });
-    req.flash("berhasil", "Data Laporan Berhasil Diubah!");
-    res.redirect("/laporan");
-  } catch (err) {
-    console.log(err.message);
-    req.flash("gagal", err.message);
-    res.redirect("/laporan");
+  if (!req.file) {
+    filename = req.body.oldLaporan;
+    try {
+      await db("data_laporan").where({ id_laporan }).update({
+        isi_laporan,
+        laporan: filename,
+        id_pembimbing,
+        id_ruangan,
+        id_siswa,
+        id_login,
+      });
+      req.flash("berhasil", "Data Laporan Berhasil Diubah!");
+      res.redirect("/laporan");
+    } catch (err) {
+      console.log(err.message);
+      req.flash("gagal", err.message);
+      res.redirect("/laporan");
+    }
+  } else {
+    filename = req.file.filename;
+    try {
+      await db("data_laporan").where({ id_laporan }).update({
+        isi_laporan,
+        tgl_laporan,
+        laporan: filename,
+        id_pembimbing,
+        id_ruangan,
+        id_siswa,
+        id_login,
+      });
+      req.flash("berhasil", "Data Laporan Berhasil Diubah!");
+      res.redirect("/laporan");
+    } catch (err) {
+      console.log(err.message);
+      req.flash("gagal", err.message);
+      res.redirect("/laporan");
+    }
   }
 });
 
@@ -1122,59 +1135,57 @@ app.put("/penilaian", async (req, res) => {
 //
 // Halaman Siswa User
 app.get("/siswa_user", async (req, res) => {
-  if (req.session.login) {
-    const id = req.session.id_login ? req.session.id_login : "";
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .select("data_siswa.*", "data_sekolah.nama_sekolah")
-      .where({ id_login: id })
-      .first();
-    const data_sekolah = await db("data_sekolah");
-    if (data_siswa) {
-      res.render("data_siswa_user", {
-        layout: "layouts/layout-user",
-        berhasil: req.flash("berhasil"),
-        gagal: req.flash("gagal"),
-        id_login: req.session.id_login,
-        email: req.session.email,
-        password: req.session.password,
-        nama: req.session.nama,
-        no_hp: req.session.no_hp,
-        data_siswa,
-        data_sekolah,
-        halaman: "Biodata Siswa",
-        activePage: "siswa_user",
-        formAction: "siswa_user?_method=PUT",
-        btnType: "",
-        blocked: "",
-      });
-    } else {
-      res.render("data_siswa_user", {
-        layout: "layouts/layout-user",
-        berhasil: req.flash("berhasil"),
-        gagal: req.flash("gagal"),
-        id_login: req.session.id_login,
-        email: req.session.email,
-        password: req.session.password,
-        nama: req.session.nama,
-        no_hp: req.session.no_hp,
-        data_siswa: "",
-        data_sekolah,
-        halaman: "Biodata Siswa",
-        activePage: "siswa_user",
-        formAction: "siswa_user",
-        btnType: "submit",
-        blocked: "",
-      });
-    }
+  if (!validasiMasuk(req.session.status, "user", req, res)) return;
+  const id = req.session.id_login ? req.session.id_login : "";
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .select("data_siswa.*", "data_sekolah.nama_sekolah")
+    .where({ id_login: id })
+    .first();
+  const data_sekolah = await db("data_sekolah");
+  if (data_siswa) {
+    res.render("data_siswa_user", {
+      layout: "layouts/layout-user",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      no_hp: req.session.no_hp,
+      data_siswa,
+      data_sekolah,
+      halaman: "Biodata Siswa",
+      activePage: "siswa_user",
+      formAction: "siswa_user?_method=PUT",
+      btnType: "",
+      blocked: "",
+      blocked_sertifikat: "",
+    });
   } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
+    res.render("data_siswa_user", {
+      layout: "layouts/layout-user",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      no_hp: req.session.no_hp,
+      data_siswa: "",
+      data_sekolah,
+      halaman: "Biodata Siswa",
+      activePage: "siswa_user",
+      formAction: "siswa_user",
+      btnType: "submit",
+      blocked: "",
+      blocked_sertifikat: "",
+    });
   }
 });
 
@@ -1301,37 +1312,58 @@ app.put(
 //
 // Halaman Laporan User
 app.get("/laporan_user", async (req, res) => {
-  if (req.session.login) {
-    const id = req.session.id_login ? req.session.id_login : "";
-    const data_laporan = await db("data_laporan")
-      .join(
-        "data_pembimbing",
-        "data_laporan.id_pembimbing",
-        "=",
-        "data_pembimbing.id_pembimbing",
-      )
-      .join(
-        "data_ruangan",
-        "data_laporan.id_ruangan",
-        "=",
-        "data_ruangan.id_ruangan",
-      )
-      .select("data_laporan.*", "data_pembimbing.*", "data_ruangan.*")
-      .where({ id_login: id })
-      .first();
-    const data_siswa = await db("data_siswa")
-      .join(
-        "data_sekolah",
-        "data_siswa.id_sekolah",
-        "=",
-        "data_sekolah.id_sekolah",
-      )
-      .select("data_siswa.*", "data_sekolah.nama_sekolah")
-      .where({ id_login: id })
-      .first();
-    const data_pembimbing = await db("data_pembimbing");
-    const data_ruangan = await db("data_ruangan");
-    if (data_laporan) {
+  if (!validasiMasuk(req.session.status, "user", req, res)) return;
+  const id = req.session.id_login ? req.session.id_login : "";
+  const data_laporan = await db("data_laporan")
+    .join(
+      "data_pembimbing",
+      "data_laporan.id_pembimbing",
+      "=",
+      "data_pembimbing.id_pembimbing",
+    )
+    .join(
+      "data_ruangan",
+      "data_laporan.id_ruangan",
+      "=",
+      "data_ruangan.id_ruangan",
+    )
+    .select("data_laporan.*", "data_pembimbing.*", "data_ruangan.*")
+    .where({ id_login: id })
+    .first();
+  const data_siswa = await db("data_siswa")
+    .join(
+      "data_sekolah",
+      "data_siswa.id_sekolah",
+      "=",
+      "data_sekolah.id_sekolah",
+    )
+    .select("data_siswa.*", "data_sekolah.nama_sekolah")
+    .where({ id_login: id })
+    .first();
+  const data_pembimbing = await db("data_pembimbing");
+  const data_ruangan = await db("data_ruangan");
+  if (data_laporan) {
+    res.render("data_laporan_user", {
+      layout: "layouts/layout-user",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_laporan,
+      data_siswa,
+      data_pembimbing,
+      data_ruangan,
+      halaman: "Menu Laporan",
+      activePage: "laporan_user",
+      formAction: "laporan_user?_method=PUT",
+      btnType: "",
+      blocked: "",
+      blocked_sertifikat: "",
+    });
+  } else {
+    if (data_siswa) {
       res.render("data_laporan_user", {
         layout: "layouts/layout-user",
         berhasil: req.flash("berhasil"),
@@ -1340,60 +1372,38 @@ app.get("/laporan_user", async (req, res) => {
         email: req.session.email,
         password: req.session.password,
         nama: req.session.nama,
-        data_laporan,
+        data_laporan: "",
         data_siswa,
         data_pembimbing,
         data_ruangan,
         halaman: "Menu Laporan",
         activePage: "laporan_user",
-        formAction: "laporan_user?_method=PUT",
-        btnType: "",
+        formAction: "laporan_user",
+        btnType: "submit",
         blocked: "",
+        blocked_sertifikat: "",
       });
     } else {
-      if (data_siswa) {
-        res.render("data_laporan_user", {
-          layout: "layouts/layout-user",
-          berhasil: req.flash("berhasil"),
-          gagal: req.flash("gagal"),
-          id_login: req.session.id_login,
-          email: req.session.email,
-          password: req.session.password,
-          nama: req.session.nama,
-          data_laporan: "",
-          data_siswa,
-          data_pembimbing,
-          data_ruangan,
-          halaman: "Menu Laporan",
-          activePage: "laporan_user",
-          formAction: "laporan_user",
-          btnType: "submit",
-          blocked: "",
-        });
-      } else {
-        res.render("data_laporan_user", {
-          layout: "layouts/layout-user",
-          berhasil: req.flash("berhasil"),
-          gagal: req.flash("gagal"),
-          id_login: req.session.id_login,
-          email: req.session.email,
-          password: req.session.password,
-          nama: req.session.nama,
-          data_laporan: "",
-          data_siswa: "",
-          data_pembimbing,
-          data_ruangan,
-          halaman: "Menu Laporan",
-          activePage: "laporan_user",
-          formAction: "laporan_user",
-          btnType: "submit",
-          blocked: "block",
-        });
-      }
+      res.render("data_laporan_user", {
+        layout: "layouts/layout-user",
+        berhasil: req.flash("berhasil"),
+        gagal: req.flash("gagal"),
+        id_login: req.session.id_login,
+        email: req.session.email,
+        password: req.session.password,
+        nama: req.session.nama,
+        data_laporan: "",
+        data_siswa: "",
+        data_pembimbing,
+        data_ruangan,
+        halaman: "Menu Laporan",
+        activePage: "laporan_user",
+        formAction: "laporan_user",
+        btnType: "submit",
+        blocked: "block",
+        blocked_sertifikat: "",
+      });
     }
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
   }
 });
 
@@ -1432,11 +1442,6 @@ app.post("/laporan_user", upload.single("filename"), async (req, res) => {
 
 app.put("/laporan_user", upload.single("filename"), async (req, res) => {
   let filename;
-  if (!req.file) {
-    filename = req.body.oldLaporan;
-  } else {
-    filename = req.file.filename;
-  }
   const {
     id_laporan,
     isi_laporan,
@@ -1446,58 +1451,70 @@ app.put("/laporan_user", upload.single("filename"), async (req, res) => {
     id_siswa,
     id_login,
   } = req.body;
-  try {
-    await db("data_laporan").where({ id_laporan }).update({
-      isi_laporan,
-      tgl_laporan,
-      laporan: filename,
-      id_pembimbing,
-      id_ruangan,
-      id_siswa,
-      id_login,
-    });
-    req.flash("berhasil", "Data Laporan Berhasil Diubah!");
-    res.redirect("/laporan_user");
-  } catch (err) {
-    console.log(err.message);
-    req.flash("gagal", err.message);
-    res.redirect("/laporan_user");
+  if (!req.file) {
+    filename = req.body.oldLaporan;
+    try {
+      await db("data_laporan").where({ id_laporan }).update({
+        isi_laporan,
+        laporan: filename,
+        id_pembimbing,
+        id_ruangan,
+        id_siswa,
+        id_login,
+      });
+      req.flash("berhasil", "Data Laporan Berhasil Diubah!");
+      res.redirect("/laporan_user");
+    } catch (err) {
+      console.log(err.message);
+      req.flash("gagal", err.message);
+      res.redirect("/laporan_user");
+    }
+  } else {
+    filename = req.file.filename;
+    try {
+      await db("data_laporan").where({ id_laporan }).update({
+        isi_laporan,
+        tgl_laporan,
+        laporan: filename,
+        id_pembimbing,
+        id_ruangan,
+        id_siswa,
+        id_login,
+      });
+      req.flash("berhasil", "Data Laporan Berhasil Diubah!");
+      res.redirect("/laporan_user");
+    } catch (err) {
+      console.log(err.message);
+      req.flash("gagal", err.message);
+      res.redirect("/laporan_user");
+    }
   }
 });
 
 //
 // Cetak Sertifikat
 app.get("/cetak_sertifikat", async (req, res) => {
-  if (req.session.login) {
-    const data_laporan = await db("data_laporan")
-      .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
-      .join(
-        "data_nilai",
-        "data_laporan.id_laporan",
-        "=",
-        "data_nilai.id_laporan",
-      )
-      .select("data_laporan.*", "data_siswa.*", "data_nilai.*");
-    res.render("cetak_sertifikat", {
-      layout: "layouts/layout-admin",
-      berhasil: req.flash("berhasil"),
-      gagal: req.flash("gagal"),
-      id_login: req.session.id_login,
-      email: req.session.email,
-      password: req.session.password,
-      nama: req.session.nama,
-      data_laporan,
-      halaman: "Cetak Sertifikat",
-      activePage: "cetak_sertifikat",
-    });
-  } else {
-    req.flash("masuk_dulu", "Silahkan Masuk Terlebih Dahulu!");
-    res.redirect("/");
-  }
+  if (!validasiMasuk(req.session.status, "admin", req, res)) return;
+  const data_laporan = await db("data_laporan")
+    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+    .join("data_nilai", "data_laporan.id_laporan", "=", "data_nilai.id_laporan")
+    .select("data_laporan.*", "data_siswa.*", "data_nilai.*");
+  res.render("cetak_sertifikat", {
+    layout: "layouts/layout-admin",
+    berhasil: req.flash("berhasil"),
+    gagal: req.flash("gagal"),
+    id_login: req.session.id_login,
+    email: req.session.email,
+    password: req.session.password,
+    nama: req.session.nama,
+    data_laporan,
+    halaman: "Cetak Sertifikat",
+    activePage: "cetak_sertifikat",
+  });
 });
 
 app.post("/cetak_sertifikat", async (req, res) => {
-  const { nama_siswa } = req.body;
+  const { nama_siswa, id_laporan } = req.body;
   try {
     const doc = new PDFDocument({ size: [2000, 1414] });
 
@@ -1506,17 +1523,41 @@ app.post("/cetak_sertifikat", async (req, res) => {
       height: 1414,
     });
 
-    const verticalOffset = 0; // Atur offset vertikal
-    const textY = doc.page.height / 2 + verticalOffset; // Menyesuaikan posisi vertikal
+    const text = nama_siswa;
+    const fontSize = 90;
+    const fontColor = "#2B5F9C";
+    const fontFamily = "font/Ephesis-Regular.ttf";
+
+    const getTextWidth = (text, fontSize, font) => {
+      doc.fontSize(fontSize);
+      if (font) {
+        doc.font(font);
+      }
+      return doc.widthOfString(text);
+    };
+
+    // Menghitung lebar teks dan menempatkannya di tengah
+    const textWidth = getTextWidth(text, fontSize, fontFamily);
+    const textX = (doc.page.width - textWidth) / 2;
+    const verticalOffset = -20; // Sesuaikan offset vertikal jika perlu
+    const textY = doc.page.height / 2 + verticalOffset;
+
+    // const verticalOffset = -20;
+    // const textY = doc.page.height / 2 + verticalOffset;
 
     doc
       .font("font/Ephesis-Regular.ttf")
       .fontSize(90)
       .fillColor("#2B5F9C")
-      .text(nama_siswa, 0, textY , { align: "center" });
+      .text(nama_siswa, textX, textY, { align: "left" });
 
-    const outputFile = `sertifikat-${nama_siswa}.pdf`;
-    const outputFilePath = path.join(__dirname, 'sertifikat', 'hasil_sertifikat', outputFile);
+    const outputFile = `sertifikat-${nama_siswa}_${id_laporan}.pdf`;
+    const outputFilePath = path.join(
+      __dirname,
+      "sertifikat",
+      "hasil_sertifikat",
+      outputFile,
+    );
 
     const stream = doc.pipe(fs.createWriteStream(outputFilePath));
 
@@ -1537,6 +1578,96 @@ app.post("/cetak_sertifikat", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
+  }
+});
+
+//
+// Sertifikat User
+app.get("/sertifikat_user", async (req, res) => {
+  if (!validasiMasuk(req.session.status, "user", req, res)) return;
+  const id = req.session.id_login;
+  const data_nilai = await db("data_laporan")
+    .join("data_siswa", "data_laporan.id_siswa", "=", "data_siswa.id_siswa")
+    .join("data_nilai", "data_laporan.id_laporan", "=", "data_nilai.id_laporan")
+    .where("data_laporan.id_login", id)
+    .select("data_laporan.*", "data_siswa.*", "data_nilai.*")
+    .first();
+
+  let sertifikat = "";
+  if (data_nilai) {
+    const id_laporan = data_nilai.id_laporan;
+    const nama_siswa = data_nilai.nama_siswa;
+    // Sertifikat PNG
+    try {
+      const backgroundImage = await loadImage(
+        "sertifikat/templete_sertifikat_contoh.png",
+      );
+
+      const canvas = createCanvas(
+        backgroundImage.width,
+        backgroundImage.height,
+      );
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+      ctx.font = '90px "Ephesis"';
+      ctx.fillStyle = "#2B5F9C";
+
+      const textWidth = ctx.measureText(nama_siswa).width;
+      const xPos = canvas.width / 2 - textWidth / 2;
+      const yPos = 750;
+      ctx.fillText(nama_siswa, xPos, yPos);
+
+      const outputFile = `sertifikat-${nama_siswa}_${id_laporan}.png`;
+      const outputPath = path.join(
+        __dirname,
+        "public",
+        "img",
+        "sertifikat_user",
+        outputFile,
+      );
+
+      const out = fs.createWriteStream(outputPath);
+      const stream = canvas.createPNGStream();
+      stream.pipe(out);
+      sertifikat = `img/sertifikat_user/${outputFile}`;
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Terjadi kesalahan saat membuat sertifikat");
+    }
+
+    res.render("sertifikat_user", {
+      layout: "layouts/layout-user",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_nilai,
+      sertifikat,
+      halaman: "Unduh Sertifikat",
+      activePage: "sertifikat_user",
+      blocked: "",
+      blocked_sertifikat: "",
+    });
+  } else {
+    res.render("sertifikat_user", {
+      layout: "layouts/layout-user",
+      berhasil: req.flash("berhasil"),
+      gagal: req.flash("gagal"),
+      id_login: req.session.id_login,
+      email: req.session.email,
+      password: req.session.password,
+      nama: req.session.nama,
+      data_nilai: "",
+      sertifikat: "",
+      halaman: "Unduh Sertifikat",
+      activePage: "sertifikat_user",
+      blocked: "",
+      blocked_sertifikat: "block",
+    });
   }
 });
 

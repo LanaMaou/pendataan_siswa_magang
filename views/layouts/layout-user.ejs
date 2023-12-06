@@ -70,6 +70,7 @@
       data-berhasil="<%= berhasil %>"
       data-gagal="<%= gagal %>"
       data-blocked="<%= blocked %>"
+      data-blocked_sertifikat="<%= blocked_sertifikat %>"
     ></div>
     <div class="wrapper">
       <!-- Preloader -->
@@ -189,6 +190,15 @@
                 >
                   <i class="nav-icon fas fa-folder-open"></i>
                   <p>Mengisi Laporan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  href="/sertifikat_user"
+                  class="nav-link <%= activePage === 'sertifikat_user' ? 'active' : '' %>"
+                >
+                  <i class="nav-icon fas fa-print"></i>
+                  <p>Unduh Sertifikat</p>
                 </a>
               </li>
             </ul>

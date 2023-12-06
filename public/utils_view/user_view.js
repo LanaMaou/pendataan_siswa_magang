@@ -31,6 +31,9 @@ $(document).ready(() => {
   let blocked = document
     .getElementById("pesan-peringatan")
     .getAttribute("data-blocked");
+  let blocked_sertifikat = document
+    .getElementById("pesan-peringatan")
+    .getAttribute("data-blocked_sertifikat");
 
   if (msgBerhasil.length !== 0) {
     toastr.success(msgBerhasil, "Berhasil");
@@ -49,6 +52,21 @@ $(document).ready(() => {
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.href = "/siswa_user";
+      }
+    });
+  }
+
+  if (blocked_sertifikat !== "") {
+    Swal.fire({
+      title: "Yahh, Sertifikatmu belum tersedia 😞",
+      text: "Laporanmu belum dinilai jadi sertifikat belum tersedia",
+      icon: "warning",
+      confirmButtonText: "OK",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "/user";
       }
     });
   }

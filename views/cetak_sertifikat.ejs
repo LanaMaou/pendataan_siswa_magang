@@ -30,6 +30,11 @@
                   <form action="/cetak_sertifikat" method="post">
                     <input
                       type="hidden"
+                      name="id_laporan"
+                      value="<%= data.id_laporan %>"
+                    />
+                    <input
+                      type="hidden"
                       name="nama_siswa"
                       value="<%= data.nama_siswa %>"
                     />
