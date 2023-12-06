@@ -41,8 +41,8 @@ app.use(flash());
 
 const validasiMasuk = (status, route, req, res) => {
   if (status  !== route) {
-    req.flash("masuk_dulu", "Ada masalah silahkah masuk ulang!");
-    res.redirect("/");
+    req.flash("gagal", "Anda mencoba masuk ke halaman yang salah!");
+    res.redirect(`/${route === 'admin' ? 'user' : 'admin'}`);
     return false;
   }else{
     return true;
